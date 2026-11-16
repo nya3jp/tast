@@ -120,6 +120,7 @@ type MutableConfig struct {
 	ContinueAfterFailure bool
 	CheckTestDeps        bool
 	WaitUntilReady       bool
+	SkipRemoteBundle     bool
 	ExtraUSEFlags        []string
 	Proxy                ProxyMode
 	CollectSysInfo       bool
@@ -328,6 +329,10 @@ func (c *Config) WaitUntilReady() bool { return c.m.WaitUntilReady }
 func (c *Config) WaitUntilReadyTimeout() time.Duration {
 	return c.m.WaitUntilReadyTimeout
 }
+
+// SkipRemoteBundle is whether to skip the remote bundle when all tests are
+// local and need no remote fixture other than the root one.
+func (c *Config) SkipRemoteBundle() bool { return c.m.SkipRemoteBundle }
 
 // DebuggerPorts is a mapping from binary to the port we want to debug said binary on.
 func (c *Config) DebuggerPorts() map[debugger.DebugTarget]int {
@@ -572,6 +577,8 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 		f.BoolVar(&c.CollectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 		f.BoolVar(&c.WaitUntilReady, "waituntilready", true, "wait until DUT is ready before running tests")
 		f.Var(command.NewDurationFlag(time.Second, &c.WaitUntilReadyTimeout, defaultWaitUntilReadyTimeout), "waituntilreadytimeout", "timeout for the entire ready.Wait function")
+		f.BoolVar(&c.SkipRemoteBundle, "skipremotebundle", false,
+			"skip the remote bundle and root remote fixture (e.g. servo, kdump, cleanup checks) when all tests are local and need no other remote fixture")
 
 		f.Var(command.NewListFlag(",", func(v []string) { c.ExtraUSEFlags = v }, nil), "extrauseflags",
 			"comma-separated list of additional USE flags to inject when checking test dependencies")

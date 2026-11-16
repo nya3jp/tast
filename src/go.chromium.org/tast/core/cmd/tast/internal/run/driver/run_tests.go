@@ -26,6 +26,7 @@ import (
 	"go.chromium.org/tast/core/internal/protocol"
 	"go.chromium.org/tast/core/internal/run/reporting"
 	"go.chromium.org/tast/core/internal/run/resultsjson"
+	"go.chromium.org/tast/core/internal/testing"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
@@ -104,6 +105,14 @@ func (d *Driver) runTests(ctx context.Context, bundle string,
 		BuildBucketID:    d.cfg.BuildBucketID(),
 	}
 
+	if d.cfg.SkipRemoteBundle() && canSkipRemoteBundle(tests) {
+		// The remote bundle would only run the root remote fixture for
+		// these tests, while starting it and connecting it to the DUT takes
+		// seconds.
+		logging.Info(ctx, "Running local tests without the remote bundle; the root remote fixture is skipped")
+		return d.runLocalTestsWithoutRemoteBundle(ctx, bundle, tests, args)
+	}
+
 	if !ShouldRunTestsRecursively() {
 		localTests, remoteTests, err := splitTests(tests)
 		if err != nil {
@@ -128,6 +137,43 @@ func (d *Driver) runTests(ctx context.Context, bundle string,
 		testNames = append(testNames, t.GetEntity().GetName())
 	}
 	return d.runRemoteTests(ctx, bundle, testNames, args, pushedFilesInfo)
+}
+
+// canSkipRemoteBundle reports whether tests are all local tests that need no
+// remote fixture other than the root one.
+func canSkipRemoteBundle(tests []*protocol.ResolvedEntity) bool {
+	for _, t := range tests {
+		// Hops 1 means a local test (see splitTests).
+		if t.GetHops() != 1 {
+			return false
+		}
+		if start := t.GetStartFixtureName(); start != "" && start != testing.TastRootRemoteFixtureName {
+			return false
+		}
+	}
+	return true
+}
+
+// runLocalTestsWithoutRemoteBundle runs local tests selected by
+// canSkipRemoteBundle. Tests under the root remote fixture start from a stub of
+// it, so its hooks do not run.
+func (d *Driver) runLocalTestsWithoutRemoteBundle(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
+	testsByStart := make(map[string][]*protocol.ResolvedEntity)
+	for _, t := range tests {
+		testsByStart[t.GetStartFixtureName()] = append(testsByStart[t.GetStartFixtureName()], t)
+	}
+	var results []*resultsjson.Result
+	for _, start := range []string{"", testing.TastRootRemoteFixtureName} {
+		if len(testsByStart[start]) == 0 {
+			continue
+		}
+		res, err := d.runLocalTestsWithRetry(ctx, bundle, testsByStart[start], &protocol.StartFixtureState{Name: start}, args)
+		results = append(results, res...)
+		if err != nil {
+			return results, err
+		}
+	}
+	return results, nil
 }
 
 func (d *Driver) runLocalTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {

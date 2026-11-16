@@ -851,3 +851,150 @@ func TestDriver_RunTests_PushedFilesPaths(t *gotesting.T) {
 		t.Errorf("Information for pushed files mismatch (-got +want):\n%s", diff)
 	}
 }
+
+func TestDriver_RunTests_SkipRemoteBundle(t *gotesting.T) {
+	for _, tc := range []struct {
+		name string
+		skip bool
+		// fixtures maps the names of local tests to their fixtures.
+		fixtures       map[string]string
+		withRemoteTest bool
+		// wantRemoteBundle is whether the remote bundle should run.
+		wantRemoteBundle  bool
+		wantRootFixture   bool
+		wantRemoteFixture bool
+	}{
+		{
+			name:     "skips_root_fixture",
+			skip:     true,
+			fixtures: map[string]string{"test.Local": testing.TastRootRemoteFixtureName},
+		},
+		{
+			name: "skips_root_fixture_and_no_fixture",
+			skip: true,
+			fixtures: map[string]string{
+				"test.Local":          testing.TastRootRemoteFixtureName,
+				"test.LocalNoFixture": "",
+			},
+		},
+		{
+			name:     "skips_root_fixture_under_local_fixture",
+			skip:     true,
+			fixtures: map[string]string{"test.Local": "fixture.Local"},
+		},
+		{
+			name:             "flag_off",
+			fixtures:         map[string]string{"test.Local": testing.TastRootRemoteFixtureName},
+			wantRemoteBundle: true,
+			wantRootFixture:  true,
+		},
+		{
+			name:              "other_remote_fixture",
+			skip:              true,
+			fixtures:          map[string]string{"test.Local": "fixture.Remote"},
+			wantRemoteBundle:  true,
+			wantRemoteFixture: true,
+		},
+		{
+			name:             "remote_test",
+			skip:             true,
+			fixtures:         map[string]string{"test.Local": testing.TastRootRemoteFixtureName},
+			withRemoteTest:   true,
+			wantRemoteBundle: true,
+			wantRootFixture:  true,
+		},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			rootFixtureUsed := false
+			remoteFixtureUsed := false
+			var wantTests []string
+
+			localReg := testing.NewRegistry("bundle")
+			for name, fixture := range tc.fixtures {
+				localReg.AddTestInstance(&testing.TestInstance{
+					Name:    name,
+					Timeout: time.Minute,
+					Fixture: fixture,
+					Func:    func(ctx context.Context, s *testing.State) {},
+				})
+				wantTests = append(wantTests, name)
+			}
+			localReg.AddFixtureInstance(&testing.FixtureInstance{
+				Name:   "fixture.Local",
+				Parent: testing.TastRootRemoteFixtureName,
+				Impl:   testfixture.New(),
+			})
+			remoteReg := testing.NewRegistry("bundle")
+			remoteReg.AddFixtureInstance(&testing.FixtureInstance{
+				Name: testing.TastRootRemoteFixtureName,
+				Impl: testfixture.New(testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) any {
+					rootFixtureUsed = true
+					return nil
+				})),
+			})
+			remoteReg.AddFixtureInstance(&testing.FixtureInstance{
+				Name: "fixture.Remote",
+				Impl: testfixture.New(testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) any {
+					remoteFixtureUsed = true
+					return nil
+				})),
+			})
+			if tc.withRemoteTest {
+				remoteReg.AddTestInstance(&testing.TestInstance{
+					Name:    "test.Remote",
+					Timeout: time.Minute,
+					Func:    func(ctx context.Context, s *testing.State) {},
+				})
+				wantTests = append(wantTests, "test.Remote")
+			}
+
+			env := runtest.SetUp(
+				t,
+				runtest.WithLocalBundles(localReg),
+				runtest.WithRemoteBundles(remoteReg),
+			)
+			ctx := env.Context()
+			cfg := env.Config(func(cfg *config.MutableConfig) {
+				cfg.PrimaryBundle = "bundle"
+				cfg.SkipRemoteBundle = tc.skip
+			})
+
+			drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+			if err != nil {
+				t.Fatalf("driver.New failed: %v", err)
+			}
+			defer drv.Close(ctx)
+
+			tests, err := drv.ListMatchedTests(ctx, nil)
+			if err != nil {
+				t.Fatalf("ListMatchedTests failed: %v", err)
+			}
+			if !tc.wantRemoteBundle {
+				// RunTests fails if it starts the remote bundle.
+				if err := os.Remove(filepath.Join(cfg.RemoteBundleDir(), "bundle")); err != nil {
+					t.Fatal("Failed to remove the remote bundle: ", err)
+				}
+			}
+			results, err := drv.RunTests(ctx, tests, nil, nil, nil, nil)
+			if err != nil {
+				t.Fatalf("RunTests failed: %v", err)
+			}
+			var gotTests []string
+			for _, r := range results {
+				gotTests = append(gotTests, r.Name)
+				if len(r.Errors) > 0 {
+					t.Errorf("%s failed: %v", r.Name, r.Errors)
+				}
+			}
+			if diff := cmp.Diff(gotTests, wantTests, cmpopts.SortSlices(func(a, b string) bool { return a < b })); diff != "" {
+				t.Errorf("Tests run mismatch (-got +want):\n%s", diff)
+			}
+			if rootFixtureUsed != tc.wantRootFixture {
+				t.Errorf("Root remote fixture set up: %v; want %v", rootFixtureUsed, tc.wantRootFixture)
+			}
+			if remoteFixtureUsed != tc.wantRemoteFixture {
+				t.Errorf("fixture.Remote set up: %v; want %v", remoteFixtureUsed, tc.wantRemoteFixture)
+			}
+		})
+	}
+}

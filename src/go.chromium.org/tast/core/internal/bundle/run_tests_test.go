@@ -581,6 +581,43 @@ func TestRunTestsRemoteDUT(t *gotesting.T) {
 	}
 }
 
+func TestRunTestsRemoteTunnel(t *gotesting.T) {
+	td := sshtest.NewTestData(nil)
+	defer td.Close()
+	tunnel, err := sshtest.NewTunnel(td.Srvs[0].Addr().String())
+	if err != nil {
+		t.Fatal("Failed starting tunnel: ", err)
+	}
+	defer tunnel.Close()
+
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+
+	hr := &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					DutConfig: &protocol.DUTConfig{
+						SshConfig: &protocol.SSHConfig{
+							ConnectionSpec: td.Srvs[0].Addr().String(),
+							KeyFile:        td.UserKeyFile,
+							TunnelAddress:  tunnel.Addr().String(),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
+	if _, err := protocoltest.RunTestsForEvents(t.Context(), cl, &protocol.RunConfig{}); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
+	}
+	if n := tunnel.Conns(); n != 1 {
+		t.Errorf("Tunnel got %d connections; want 1", n)
+	}
+}
+
 func TestRunTestsRemoteReconnectBetweenTests(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()

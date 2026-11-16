@@ -8,6 +8,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
+	"net"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -15,12 +17,15 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/grpc"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/runtest"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/internal/fakeexec"
 	"go.chromium.org/tast/core/internal/protocol"
+	"go.chromium.org/tast/core/internal/rpc"
 	"go.chromium.org/tast/core/internal/run/reporting"
 	"go.chromium.org/tast/core/internal/run/resultsjson"
 	"go.chromium.org/tast/core/internal/testing"
@@ -994,6 +999,105 @@ func TestDriver_RunTests_SkipRemoteBundle(t *gotesting.T) {
 			}
 			if remoteFixtureUsed != tc.wantRemoteFixture {
 				t.Errorf("fixture.Remote set up: %v; want %v", remoteFixtureUsed, tc.wantRemoteFixture)
+			}
+		})
+	}
+}
+
+func TestDriver_RunTests_RemoteTunnel(t *gotesting.T) {
+	for _, tc := range []struct {
+		name         string
+		proxyCommand string
+		wantTunnel   bool
+	}{
+		{name: "direct", proxyCommand: "", wantTunnel: false},
+		{name: "proxy_command", proxyCommand: "socat tcp-connect:%h:%p STDIO", wantTunnel: true},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			t.Setenv("CLOUDBOTS_LAB_DOMAIN", "")
+			remoteReg := testing.NewRegistry("bundle")
+			remoteReg.AddTestInstance(&testing.TestInstance{
+				Name:    "test.Remote",
+				Timeout: time.Minute,
+				Func:    func(ctx context.Context, s *testing.State) {},
+			})
+			env := runtest.SetUp(t, runtest.WithRemoteBundles(remoteReg))
+			ctx := env.Context()
+			cfg := env.Config(func(cfg *config.MutableConfig) {
+				cfg.ProxyCommand = tc.proxyCommand
+			})
+
+			drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+			if err != nil {
+				t.Fatalf("driver.New failed: %v", err)
+			}
+			defer drv.Close(ctx)
+
+			tests, err := drv.ListMatchedTests(ctx, nil)
+			if err != nil {
+				t.Fatalf("ListMatchedTests failed: %v", err)
+			}
+
+			// Replace the fake remote bundle after listing so we can inspect the
+			// HandshakeRequest sent by runRemoteTestsOnce and check the tunnel
+			// listener lifecycle.
+			type tunnelObservation struct {
+				addr     string
+				dialable bool
+			}
+			tunnelCh := make(chan tunnelObservation, 1)
+			bundlePath := filepath.Join(cfg.RemoteBundleDir(), "bundle")
+			if err := os.Remove(bundlePath); err != nil {
+				t.Fatalf("Failed to remove fake remote bundle: %v", err)
+			}
+			lo, err := fakeexec.CreateLoopback(bundlePath, func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
+				rpc.RunServer(stdin, stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+					obs := tunnelObservation{
+						addr: req.GetBundleInitParams().GetBundleConfig().GetPrimaryTarget().GetDutConfig().GetSshConfig().GetTunnelAddress(),
+					}
+					if obs.addr != "" {
+						if c, err := net.DialTimeout("tcp", obs.addr, 5*time.Second); err == nil {
+							obs.dialable = true
+							c.Close()
+						}
+					}
+					select {
+					case tunnelCh <- obs:
+					default:
+					}
+					return errors.New("stop after handshake")
+				})
+				return 0
+			})
+			if err != nil {
+				t.Fatalf("CreateLoopback failed: %v", err)
+			}
+			defer lo.Close()
+
+			// RunTests returns our sentinel error after handshake.
+			drv.RunTests(ctx, tests, nil, nil, nil, nil)
+
+			var obs tunnelObservation
+			select {
+			case obs = <-tunnelCh:
+			default:
+				t.Fatal("Remote bundle did not receive HandshakeRequest")
+			}
+			if !tc.wantTunnel {
+				if obs.addr != "" {
+					t.Errorf("Remote bundle HandshakeRequest had TunnelAddress = %q; want empty", obs.addr)
+				}
+				return
+			}
+			if obs.addr == "" {
+				t.Fatal("Remote bundle HandshakeRequest had empty TunnelAddress")
+			}
+			if !obs.dialable {
+				t.Errorf("Tunnel %s was not accepting connections during RunTests", obs.addr)
+			}
+			if c, err := net.DialTimeout("tcp", obs.addr, time.Second); err == nil {
+				c.Close()
+				t.Errorf("Tunnel %s was still accepting connections after RunTests returned", obs.addr)
 			}
 		})
 	}

@@ -79,6 +79,10 @@ message SSHConfig {
   string key_dir = 3;
   // ProxyCommand specifies the command to use to connect to the DUT.
   string proxy_command = 4;
+  // TunnelAddress is the local address of a tunnel to the DUT's SSH server
+  // over an SSH connection that the parent process holds. If set, the first
+  // connection to the DUT goes through it.
+  string tunnel_address = 5;
 }
 
 // MetaTestConfig contains parameters needed by meta tests (tests that

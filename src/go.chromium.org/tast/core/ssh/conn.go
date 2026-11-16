@@ -70,6 +70,12 @@ type Options struct {
 	// ProxyCommand specifies the command to use to connect to the DUT.
 	ProxyCommand string
 
+	// TunnelAddress is the local "host:port" address of a tunnel to the SSH
+	// server, e.g. one forwarded over another SSH connection to it. If set,
+	// New connects through it (ignoring ProxyCommand) instead of connecting
+	// to Hostname, which still names the server.
+	TunnelAddress string
+
 	// ConnectTimeout contains a timeout for establishing the TCP connection.
 	ConnectTimeout time.Duration
 	// ConnectRetries contains the number of times to retry after a connection failure.
@@ -261,7 +267,9 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 	for i := 0; i < o.ConnectRetries+1; i++ {
 		start := time.Now()
 		var cl *ssh.Client
-		if isCloudbot {
+		if o.TunnelAddress != "" {
+			cl, err = connectTunnel(ctx, o.TunnelAddress, o.Hostname, cfg)
+		} else if isCloudbot {
 			if o.WarnFunc != nil {
 				o.WarnFunc("SSH to client through cloudbot proxy")
 			}
@@ -375,6 +383,41 @@ func connectSSH(ctx context.Context, hostPort, proxyCommand string, cfg *ssh.Cli
 		return nil, err
 	}
 	return cl, nil
+}
+
+// connectTunnel attempts to connect to the SSH server named hostPort through
+// the tunnel listening at tunnelAddr.
+func connectTunnel(ctx context.Context, tunnelAddr, hostPort string, cfg *ssh.ClientConfig) (*ssh.Client, error) {
+	dialCtx := ctx
+	if cfg.Timeout > 0 {
+		var cancel context.CancelFunc
+		dialCtx, cancel = context.WithTimeout(ctx, cfg.Timeout)
+		defer cancel()
+	}
+
+	conn, err := (&net.Dialer{}).DialContext(dialCtx, "tcp", tunnelAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	// A tunnel can accept connections even if the connection it rides on is
+	// dead, and ssh.NewClientConn does not take a context. Close conn if
+	// dialCtx is canceled.
+	stop := context.AfterFunc(dialCtx, func() { conn.Close() })
+	c, chans, reqs, err := ssh.NewClientConn(conn, hostPort, cfg)
+	if !stop() {
+		if err == nil {
+			c.Close()
+		} else {
+			conn.Close()
+		}
+		return nil, dialCtx.Err()
+	}
+	if err != nil {
+		conn.Close()
+		return nil, err
+	}
+	return ssh.NewClient(c, chans, reqs), nil
 }
 
 // connectCloudBotsSSH attempts to connect to host from CloudBots through proxy

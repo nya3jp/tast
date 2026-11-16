@@ -27,6 +27,7 @@ import (
 	"go.chromium.org/tast/core/internal/run/reporting"
 	"go.chromium.org/tast/core/internal/run/resultsjson"
 	"go.chromium.org/tast/core/internal/testing"
+	"go.chromium.org/tast/core/ssh"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
@@ -364,6 +365,12 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	if err != nil {
 		return nil, err
 	}
+	if sshCfg := bcfg.GetPrimaryTarget().GetDutConfig().GetSshConfig(); shouldUseSSHTunnel(sshCfg) {
+		if tunnel := newSSHTunnel(ctx, d.SSHConn()); tunnel != nil {
+			defer tunnel.Close()
+			sshCfg.TunnelAddress = tunnel.ListenAddr().String()
+		}
+	}
 	multiplexer := logging.NewMultiLogger()
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
@@ -379,6 +386,41 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs, bundle)
 	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc, ShouldRunTestsRecursively())
 	return proc.Results(), proc.FatalError()
+}
+
+// shouldUseSSHTunnel reports whether a new SSH connection to the target goes
+// through a proxy or relay (where opening a second connection is expensive).
+// Direct SSH connections gain little from tunneling and avoid nesting all
+// remote-bundle traffic inside the CLI's connection.
+func shouldUseSSHTunnel(sshCfg *protocol.SSHConfig) bool {
+	if sshCfg == nil {
+		return false
+	}
+	if pc := sshCfg.GetProxyCommand(); pc != "" && strings.ToLower(pc) != "none" {
+		return true
+	}
+	return os.Getenv("CLOUDBOTS_LAB_DOMAIN") != ""
+}
+
+// newSSHTunnel returns a tunnel to the SSH server of the target device over
+// conn, or nil if it is unavailable. The caller must call Close on a non-nil
+// result. The remote bundle connects through it to skip setting up a new
+// connection, which can take seconds through a proxy command.
+func newSSHTunnel(ctx context.Context, conn *ssh.Conn) *ssh.Forwarder {
+	if conn == nil || conn.Type() != ssh.SSH {
+		return nil
+	}
+	// Use port 22 on the target rather than the port in the connection spec,
+	// which may be forwarded to it, e.g. for VMs. If the tunnel fails, the
+	// remote bundle falls back to a new connection.
+	tunnel, err := conn.ForwardLocalToRemote("tcp", "127.0.0.1:0", "127.0.0.1:22", func(err error) {
+		logging.Debug(ctx, "SSH tunnel to the target failed: ", err)
+	})
+	if err != nil {
+		logging.Debug(ctx, "Failed to open SSH tunnel to the target: ", err)
+		return nil
+	}
+	return tunnel
 }
 
 func (d *Driver) newConfigsForRemoteTests(ctx context.Context, tests []string,

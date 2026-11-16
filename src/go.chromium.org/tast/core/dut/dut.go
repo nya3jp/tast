@@ -35,11 +35,21 @@ type DUT struct {
 	beforeReboot func(context.Context, *DUT) error
 }
 
+// Option is an option for New.
+type Option func(d *DUT)
+
+// WithTunnelAddress makes the first connection to the DUT go through the
+// local tunnel at addr ("host:port"), falling back to connecting normally
+// if it fails. If addr is empty, no tunnel is used.
+func WithTunnelAddress(addr string) Option {
+	return func(d *DUT) { d.sopt.TunnelAddress = addr }
+}
+
 // New returns a new DUT usable for communication with target
 // (of the form "[<user>@]host[:<port>]") using the SSH key at keyFile or
 // keys located in keyDir.
 // The DUT does not start out in a connected state; Connect must be called.
-func New(target, keyFile, keyDir, proxyCommand string, beforeReboot func(context.Context, *DUT) error) (*DUT, error) {
+func New(target, keyFile, keyDir, proxyCommand string, beforeReboot func(context.Context, *DUT) error, opts ...Option) (*DUT, error) {
 	d := DUT{beforeReboot: beforeReboot}
 	if err := ssh.ParseTarget(target, &d.sopt); err != nil {
 		return nil, err
@@ -48,6 +58,9 @@ func New(target, keyFile, keyDir, proxyCommand string, beforeReboot func(context
 	d.sopt.KeyFile = keyFile
 	d.sopt.KeyDir = keyDir
 	d.sopt.ProxyCommand = proxyCommand
+	for _, opt := range opts {
+		opt(&d)
+	}
 
 	return &d, nil
 }
@@ -108,6 +121,24 @@ func (d *DUT) Connect(ctx context.Context) error {
 		return nil
 	}
 	d.Disconnect(ctx)
+
+	if d.sopt.TunnelAddress != "" {
+		// Use the tunnel only once. It rides on another connection to the
+		// DUT, which does not survive a reboot, the usual reason to
+		// reconnect.
+		sopt := d.sopt
+		d.sopt.TunnelAddress = ""
+		hst, err := ssh.New(ctx, &sopt)
+		if err == nil {
+			d.hst = hst
+			logging.Infof(ctx, "Opened DUT SSH connection to %s through %s", sopt.Hostname, sopt.TunnelAddress)
+			return nil
+		}
+		if ctx.Err() != nil {
+			return err
+		}
+		logging.Infof(ctx, "Failed to connect to DUT through %s (%v); retrying without tunnel", sopt.TunnelAddress, err)
+	}
 
 	var err error
 	d.hst, err = ssh.New(ctx, &d.sopt)

@@ -6,6 +6,8 @@ package ssh_test
 
 import (
 	"context"
+	"errors"
+	"net"
 	"os"
 	"path/filepath"
 	"testing"
@@ -150,4 +152,87 @@ func TestProxyCommandNone(t *testing.T) {
 		t.Fatal("Unexpectedly unable to connect to server: ", err)
 	}
 	defer hst.Close(ctx)
+}
+
+func TestTunnel(t *testing.T) {
+	t.Parallel()
+	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, nil)
+	if err != nil {
+		t.Fatal("Failed starting server: ", err)
+	}
+	defer srv.Close()
+	tunnel, err := sshtest.NewTunnel(srv.Addr().String())
+	if err != nil {
+		t.Fatal("Failed starting tunnel: ", err)
+	}
+	defer tunnel.Close()
+
+	ctx := t.Context()
+	opt := ssh.Options{
+		TunnelAddress:  tunnel.Addr().String(),
+		ProxyCommand:   "false",
+		ConnectTimeout: time.Minute,
+	}
+	hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &opt)
+	if err != nil {
+		t.Fatal("Unexpectedly unable to connect to server: ", err)
+	}
+	defer hst.Close(ctx)
+	if n := tunnel.Conns(); n != 1 {
+		t.Errorf("Tunnel got %d connections; want 1", n)
+	}
+}
+
+func TestTunnelTimeout(t *testing.T) {
+	t.Parallel()
+	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, nil)
+	if err != nil {
+		t.Fatal("Failed starting server: ", err)
+	}
+	defer srv.Close()
+	// This listener never accepts connections, like a tunnel over a dead
+	// connection.
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal("Failed to listen: ", err)
+	}
+	defer l.Close()
+
+	ctx := t.Context()
+	opt := ssh.Options{TunnelAddress: l.Addr().String(), ConnectTimeout: 100 * time.Millisecond}
+	hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &opt)
+	if err == nil {
+		hst.Close(ctx)
+		t.Fatal("Unexpectedly connected through a stalled tunnel")
+	}
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("ConnectToServer error = %v; want %v", err, context.DeadlineExceeded)
+	}
+}
+
+func TestTunnelCanceled(t *testing.T) {
+	t.Parallel()
+	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, nil)
+	if err != nil {
+		t.Fatal("Failed starting server: ", err)
+	}
+	defer srv.Close()
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal("Failed to listen: ", err)
+	}
+	defer l.Close()
+
+	ctx, cancel := context.WithTimeout(t.Context(), 100*time.Millisecond)
+	defer cancel()
+	// ConnectTimeout is zero so only ctx cancellation can abort the stalled handshake.
+	opt := ssh.Options{TunnelAddress: l.Addr().String()}
+	hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &opt)
+	if err == nil {
+		hst.Close(t.Context())
+		t.Fatal("Unexpectedly connected through a stalled tunnel")
+	}
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("ConnectToServer error = %v; want %v", err, context.DeadlineExceeded)
+	}
 }

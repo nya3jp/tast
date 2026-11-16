@@ -246,14 +246,14 @@ func (ew *eventWriter) Heartbeat() error {
 }
 
 // connectToTarget connects to the target DUT and returns its connection.
-func connectToTarget(ctx context.Context, spec, keyFile, keyDir, proxyCommand string, beforeReboot func(context.Context, *dut.DUT) error) (_ *dut.DUT, retErr error) {
+func connectToTarget(ctx context.Context, spec, keyFile, keyDir, proxyCommand string, beforeReboot func(context.Context, *dut.DUT) error, opts ...dut.Option) (_ *dut.DUT, retErr error) {
 	// Do not attempt to connect to the target if we dont have it.
 	if spec == "" || spec == "-" {
 		return nil, nil
 	}
 
 	logging.Infof(ctx, "Connecting to DUT: %s", spec)
-	dt, err := dut.New(spec, keyFile, keyDir, proxyCommand, beforeReboot)
+	dt, err := dut.New(spec, keyFile, keyDir, proxyCommand, beforeReboot, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create connection: %v", err)
 	}
@@ -347,7 +347,8 @@ func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunC
 	pt := bcfg.GetPrimaryTarget()
 	logging.Info(ctx, "Connecting to DUT")
 	sshCfg := pt.GetDutConfig().GetSshConfig()
-	dt, err := connectToTarget(ctx, sshCfg.GetConnectionSpec(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), sshCfg.GetProxyCommand(), scfg.beforeReboot)
+	dt, err := connectToTarget(ctx, sshCfg.GetConnectionSpec(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), sshCfg.GetProxyCommand(), scfg.beforeReboot,
+		dut.WithTunnelAddress(sshCfg.GetTunnelAddress()))
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 	}

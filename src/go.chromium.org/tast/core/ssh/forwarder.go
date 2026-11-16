@@ -29,8 +29,10 @@ type Forwarder struct {
 	connFunc func() (net.Conn, error) // opens remote conns
 	ls       net.Listener             // listens for the forwarded conns
 
-	errFunc func(error) // called when error is encountered while forwarding; may be nil
-	mutex   sync.Mutex  // protects errFunc
+	mutex   sync.Mutex            // protects errFunc, closed, and conns
+	errFunc func(error)           // called when error is encountered while forwarding; may be nil
+	closed  bool                  // true once Close has been called
+	conns   map[net.Conn]struct{} // active connections to close on Close
 }
 
 // newForwarder returns a Forwarder that calls connFunc to open a connection in response to
@@ -42,6 +44,7 @@ func newForwarder(listener net.Listener, connFunc func() (net.Conn, error), errF
 		connFunc: connFunc,
 		errFunc:  errFunc,
 		ls:       listener,
+		conns:    make(map[net.Conn]struct{}),
 	}
 
 	// Start a goroutine that services the listener and launches
@@ -53,9 +56,11 @@ func newForwarder(listener net.Listener, connFunc func() (net.Conn, error), errF
 				break
 			}
 			go func() {
-				if err := f.handleConn(local); err != nil && f.errFunc != nil {
+				if err := f.handleConn(local); err != nil {
 					f.mutex.Lock()
-					f.errFunc(err)
+					if f.errFunc != nil {
+						f.errFunc(err)
+					}
 					f.mutex.Unlock()
 				}
 			}()
@@ -65,12 +70,49 @@ func newForwarder(listener net.Listener, connFunc func() (net.Conn, error), errF
 	return &f, nil
 }
 
-// Close stops listening for incoming connections.
+// Close stops listening for incoming connections and closes active forwarded
+// connections.
 func (f *Forwarder) Close() error {
 	f.mutex.Lock()
 	f.errFunc = nil
+	f.closed = true
+	conns := f.conns
+	f.conns = nil
 	f.mutex.Unlock()
-	return f.ls.Close()
+
+	err := f.ls.Close()
+	for c := range conns {
+		c.Close()
+	}
+	return err
+}
+
+func (f *Forwarder) trackConn(c net.Conn) bool {
+	f.mutex.Lock()
+	defer f.mutex.Unlock()
+	if f.closed {
+		return false
+	}
+	f.conns[c] = struct{}{}
+	return true
+}
+
+func (f *Forwarder) untrackConn(c net.Conn) {
+	f.mutex.Lock()
+	delete(f.conns, c)
+	f.mutex.Unlock()
+}
+
+// closeWrite propagates end-of-stream to c so the peer stops waiting to read
+// and unblocks the reverse io.Copy. On clean EOF it half-closes when supported
+// so data still in flight in the other direction is not lost.
+func closeWrite(c net.Conn, copyErr error) {
+	if copyErr == nil {
+		if cw, ok := c.(interface{ CloseWrite() error }); ok && cw.CloseWrite() == nil {
+			return
+		}
+	}
+	c.Close()
 }
 
 // LocalAddr returns the address used to listen for connections.
@@ -88,20 +130,30 @@ func (f *Forwarder) ListenAddr() net.Addr {
 // and copies data between it and src. It closes src before returning.
 func (f *Forwarder) handleConn(src net.Conn) error {
 	defer src.Close()
+	if !f.trackConn(src) {
+		return nil
+	}
+	defer f.untrackConn(src)
 
 	dst, err := f.connFunc()
 	if err != nil {
 		return err
 	}
 	defer dst.Close()
+	if !f.trackConn(dst) {
+		return nil
+	}
+	defer f.untrackConn(dst)
 
-	ch := make(chan error)
+	ch := make(chan error, 2)
 	go func() {
 		_, err := io.Copy(src, dst)
+		closeWrite(src, err)
 		ch <- err
 	}()
 	go func() {
 		_, err := io.Copy(dst, src)
+		closeWrite(dst, err)
 		ch <- err
 	}()
 

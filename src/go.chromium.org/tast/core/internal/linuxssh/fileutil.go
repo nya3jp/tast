@@ -39,6 +39,11 @@ const (
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
 func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy SymlinkPolicy) error {
+	return copyFile(ctx, s, src, dst, symlinkPolicy, false)
+}
+
+// copyFile copies src from s to dst and optionally deletes src remotely.
+func copyFile(ctx context.Context, s *ssh.Conn, src, dst string, policy SymlinkPolicy, deleteRemote bool) error {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -46,7 +51,7 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 		return err
 	}
 
-	path, close, err := getFile(ctx, s, src, dst, symlinkPolicy)
+	path, close, deleted, err := getFile(ctx, s, src, dst, policy, deleteRemote)
 	if err != nil {
 		return err
 	}
@@ -55,18 +60,25 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 	if err := os.Rename(path, dst); err != nil {
 		return fmt.Errorf("moving local file failed: %v", err)
 	}
+	if deleteRemote && !deleted {
+		if err := s.CommandContext(ctx, "rm", "-rf", "--", src).Run(); err != nil {
+			return errors.Wrap(err, "delete failed")
+		}
+	}
 	return nil
 }
 
 // getFile copies a file or directory from the host to the local machine.
 // It creates a temporary directory under the directory of dst, and copies
-// src to it. It returns the filepath where src has been copied to.
+// src to it. If deleteRemote is true, it attempts to delete src on the remote
+// host during the transfer on a best-effort basis and reports via deleted
+// whether src was removed; callers must still delete src when !deleted.
 // Caller must call close to remove the temporary directory.
-func getFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy SymlinkPolicy) (path string, close func() error, retErr error) {
+func getFile(ctx context.Context, s *ssh.Conn, src, dst string, policy SymlinkPolicy, deleteRemote bool) (path string, close func() error, deleted bool, retErr error) {
 	// Create a temporary directory alongside the destination path.
 	td, err := os.MkdirTemp(filepath.Dir(dst), filepath.Base(dst)+".")
 	if err != nil {
-		return "", nil, fmt.Errorf("creating local temp dir failed: %v", err)
+		return "", nil, false, fmt.Errorf("creating local temp dir failed: %v", err)
 	}
 	defer func() {
 		if retErr != nil {
@@ -77,29 +89,66 @@ func getFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 		return os.RemoveAll(td)
 	}
 
+	// Android toybox tar lacks --remove-files and does not reliably treat "--"
+	// as an option terminator, and --dereference cannot safely be combined with
+	// --remove-files.
+	isADB := s != nil && s.Type() == ssh.ADB
+	removeFiles := deleteRemote && s != nil && !isADB && policy == PreserveSymlinks
+
 	sb := filepath.Base(src)
 	taropts := []string{"-c", "--gzip", "-C", filepath.Dir(src)}
-	if symlinkPolicy == DereferenceSymlinks {
+	if removeFiles {
+		taropts = append(taropts, "--remove-files")
+	}
+	if policy == DereferenceSymlinks {
 		taropts = append(taropts, "--dereference")
+	}
+	if s != nil && !isADB {
+		taropts = append(taropts, "--")
 	}
 	taropts = append(taropts, sb)
 	rcmd := s.CommandContext(ctx, "tar", taropts...)
 	p, err := rcmd.StdoutPipe()
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to get stdout pipe: %v", err)
+		return "", nil, false, fmt.Errorf("failed to get stdout pipe: %v", err)
 	}
 	if err := rcmd.Start(); err != nil {
-		return "", nil, fmt.Errorf("running remote tar failed: %v", err)
+		return "", nil, false, fmt.Errorf("running remote tar failed: %v", err)
 	}
-	defer rcmd.Wait()
-	defer rcmd.Abort()
+	rcmdDone := false
+	defer func() {
+		if !rcmdDone {
+			rcmd.Abort()
+			rcmd.Wait()
+		}
+	}()
 
 	cmd := exec.CommandContext(ctx, "/bin/tar", "-x", "--gzip", "--no-same-owner", "-p", "-C", td)
 	cmd.Stdin = p
 	if err := cmd.Run(); err != nil {
-		return "", nil, fmt.Errorf("running local tar failed: %v", err)
+		return "", nil, false, fmt.Errorf("running local tar failed: %v", err)
 	}
-	return filepath.Join(td, sb), close, nil
+
+	outPath := filepath.Join(td, sb)
+	if _, err := os.Lstat(outPath); err != nil {
+		// GNU tar -c writes an empty archive before exiting non-zero when src is
+		// missing, so local tar -x exits 0 without creating outPath.
+		rcmdDone = true
+		if werr := rcmd.Wait(); werr != nil {
+			return "", nil, false, fmt.Errorf("running remote tar failed: %v", werr)
+		}
+		return "", nil, false, err
+	}
+
+	if removeFiles {
+		// GNU tar --remove-files unlinks regular files as they are archived and
+		// removes directories after closing the archive stream, so wait without
+		// aborting; if removal fails (e.g. a read-only subdir), callers fall back
+		// to rm -rf.
+		rcmdDone = true
+		deleted = rcmd.Wait() == nil
+	}
+	return outPath, close, deleted, nil
 }
 
 // GetFileTail copies a file starting from startLine in src from the host to the local machine.
@@ -439,23 +488,22 @@ func DeleteTree(ctx context.Context, s *ssh.Conn, baseDir string, files []string
 	return nil
 }
 
-// GetAndDeleteFile is similar to GetFile, but it also deletes a remote file
-// when it is successfully copied.
+// GetAndDeleteFile is similar to GetFile, but it also deletes src on the
+// remote host during or after the transfer. If copying fails, src may already
+// be partially or fully removed on the remote host.
 func GetAndDeleteFile(ctx context.Context, s *ssh.Conn, src, dst string, policy SymlinkPolicy) error {
-	if err := GetFile(ctx, s, src, dst, policy); err != nil {
-		return err
-	}
-	if err := s.CommandContext(ctx, "rm", "-rf", "--", src).Run(); err != nil {
-		return errors.Wrap(err, "delete failed")
-	}
-	return nil
+	return copyFile(ctx, s, src, dst, policy, true)
 }
 
-// GetAndDeleteFilesInDir copies all files in dst to src, assuming both
-// dst and src are directories.
-// It deletes the remote directory if all the files are successfully copied.
+// GetAndDeleteFilesInDir copies all files in src to dst, assuming both
+// src and dst are directories, and deletes the remote src directory during or
+// after the transfer. If copying fails, src may already be partially or fully
+// removed on the remote host.
 func GetAndDeleteFilesInDir(ctx context.Context, s *ssh.Conn, src, dst string, policy SymlinkPolicy) error {
-	dir, close, err := getFile(ctx, s, src, dst, policy)
+	src = filepath.Clean(src)
+	dst = filepath.Clean(dst)
+
+	dir, close, deleted, err := getFile(ctx, s, src, dst, policy, true)
 	if err != nil {
 		return err
 	}
@@ -483,8 +531,10 @@ func GetAndDeleteFilesInDir(ctx context.Context, s *ssh.Conn, src, dst string, p
 		return err
 	}
 
-	if err := s.CommandContext(ctx, "rm", "-rf", "--", src).Run(); err != nil {
-		return errors.Wrap(err, "delete failed")
+	if !deleted {
+		if err := s.CommandContext(ctx, "rm", "-rf", "--", src).Run(); err != nil {
+			return errors.Wrap(err, "delete failed")
+		}
 	}
 	return nil
 }

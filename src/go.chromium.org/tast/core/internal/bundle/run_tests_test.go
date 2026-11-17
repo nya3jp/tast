@@ -148,7 +148,6 @@ func TestRunTests(t *gotesting.T) {
 	wantEvents := []protocol.Event{
 		&protocol.RunLogEvent{Text: preRunMsg, Level: protocol.LogLevel_INFO},
 		&protocol.RunLogEvent{Text: "Connecting to DUT", Level: protocol.LogLevel_INFO},
-		&protocol.RunLogEvent{Text: "Devserver status: using pseudo client", Level: protocol.LogLevel_INFO},
 		&protocol.RunLogEvent{Text: "Found 0 external linked data file(s), need to download 0", Level: protocol.LogLevel_INFO},
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: name1, Text: preTestMsg, Level: protocol.LogLevel_INFO},

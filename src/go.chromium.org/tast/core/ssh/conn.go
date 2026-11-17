@@ -42,6 +42,28 @@ func init() {
 	targetRegexp = regexp.MustCompile("^([^@]+@)?([^@]+)$")
 }
 
+// preferredHostKeyAlgos lists host key algorithms in preference order, placing
+// ED25519 first (and ECDSA host certificates ahead of RSA ones) while keeping
+// all other algorithms supported by golang.org/x/crypto/ssh as fallbacks.
+// ChromeOS sshd offers only RSA and ED25519 host keys, and x/crypto/ssh places
+// ssh-ed25519 last by default, causing handshakes to negotiate rsa-sha2-256 and
+// sign with the DUT's slower RSA key instead of ED25519.
+//
+// TODO(b/575250142): Derive this list from ssh.SupportedAlgorithms() (and
+// ssh.InsecureAlgorithms() if still needed) with ED25519 moved first once
+// dev-go/crypto is upgraded past v0.35.
+var preferredHostKeyAlgos = []string{
+	ssh.CertAlgoED25519v01,
+	ssh.CertAlgoECDSA256v01, ssh.CertAlgoECDSA384v01, ssh.CertAlgoECDSA521v01,
+	ssh.CertAlgoRSASHA256v01, ssh.CertAlgoRSASHA512v01,
+	ssh.CertAlgoRSAv01, ssh.CertAlgoDSAv01,
+
+	ssh.KeyAlgoED25519,
+	ssh.KeyAlgoECDSA256, ssh.KeyAlgoECDSA384, ssh.KeyAlgoECDSA521,
+	ssh.KeyAlgoRSASHA256, ssh.KeyAlgoRSASHA512,
+	ssh.KeyAlgoRSA, ssh.KeyAlgoDSA,
+}
+
 // Conn represents an SSH connection to another computer.
 type Conn struct {
 	cl *ssh.Client
@@ -257,10 +279,11 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 		return nil, err
 	}
 	cfg := &ssh.ClientConfig{
-		User:            o.User,
-		Auth:            am,
-		Timeout:         o.ConnectTimeout,
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		User:              o.User,
+		Auth:              am,
+		Timeout:           o.ConnectTimeout,
+		HostKeyCallback:   ssh.InsecureIgnoreHostKey(),
+		HostKeyAlgorithms: preferredHostKeyAlgos,
 	}
 
 	isCloudbot := os.Getenv("CLOUDBOTS_LAB_DOMAIN") != ""

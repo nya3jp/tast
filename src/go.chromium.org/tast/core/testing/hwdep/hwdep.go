@@ -132,6 +132,7 @@ const (
 	BroadcomBCM4356PCIE        = wlan.BroadcomBCM4356PCIE
 	BroadcomBCM4371PCIE        = wlan.BroadcomBCM4371PCIE
 	Realtek8822CPCIE           = wlan.Realtek8822CPCIE
+	Realtek8822CVTPCIE         = wlan.Realtek8822CVTPCIE
 	Realtek8852APCIE           = wlan.Realtek8852APCIE
 	Realtek8852CPCIE           = wlan.Realtek8852CPCIE
 	Realtek8852BPCIE           = wlan.Realtek8852BPCIE
@@ -3591,6 +3592,7 @@ func BackgroundScanning() Condition {
 		QualcommAtherosQCA6174,
 		QualcommAtherosQCA6174SDIO,
 		Realtek8822CPCIE,
+		Realtek8822CVTPCIE,
 		Realtek8852CPCIE,
 	)
 }

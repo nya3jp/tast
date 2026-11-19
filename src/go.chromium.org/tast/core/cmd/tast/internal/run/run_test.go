@@ -597,6 +597,11 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	defer ds.Close()
 
 	called := make(map[string]struct{})
+	dutInfoCalls := make(map[string]int)
+	var remoteURL string
+	artifactsURL := func(role string) string {
+		return "gs://example-bucket/" + role + "/"
+	}
 	makeHandler := func(role string) runtest.DUTOption {
 		return runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
 			called[role] = struct{}{}
@@ -604,15 +609,33 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 			if diff := cmp.Diff(req.GetServiceConfig(), want, protocmp.Transform()); diff != "" {
 				t.Errorf("ServiceConfig mismatch (-got +want):\n%s", diff)
 			}
+			if got, want := req.GetBuildArtifactUrl(), artifactsURL(role); got != want {
+				t.Errorf("DownloadPrivateBundles(%s) BuildArtifactUrl = %q, want %q", role, got, want)
+			}
 			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		})
+	}
+	makeDUTInfoHandler := func(role string) runtest.DUTOption {
+		return runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			dutInfoCalls[role]++
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					DefaultBuildArtifactsUrl: artifactsURL(role),
+				},
+			}, nil
 		})
 	}
 
 	env := runtest.SetUp(
 		t,
+		runtest.WithDownloadPrivateRemoteBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			remoteURL = req.GetBuildArtifactUrl()
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
 		makeHandler("dut0"),
-		runtest.WithCompanionDUT("dut1", makeHandler("dut1")),
-		runtest.WithCompanionDUT("dut2", makeHandler("dut2")),
+		makeDUTInfoHandler("dut0"),
+		runtest.WithCompanionDUT("dut1", makeHandler("dut1"), makeDUTInfoHandler("dut1")),
+		runtest.WithCompanionDUT("dut2", makeHandler("dut2"), makeDUTInfoHandler("dut2")),
 	)
 	ctx := env.Context()
 	cfg := env.Config(func(cfg *config.MutableConfig) {
@@ -625,9 +648,16 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 		t.Errorf("Run failed: %v", err)
 	}
 
+	if want := artifactsURL("dut0"); remoteURL != want {
+		t.Errorf("DownloadPrivateRemoteBundles BuildArtifactUrl = %q, want %q", remoteURL, want)
+	}
 	wantCalled := map[string]struct{}{"dut0": {}, "dut1": {}, "dut2": {}}
 	if diff := cmp.Diff(called, wantCalled); diff != "" {
 		t.Errorf("DownloadPrivateBundles not called (-got +want):\n%s", diff)
+	}
+	wantDUTInfoCalls := map[string]int{"dut0": 1, "dut1": 1, "dut2": 1}
+	if diff := cmp.Diff(dutInfoCalls, wantDUTInfoCalls); diff != "" {
+		t.Errorf("GetDUTInfo call counts mismatch (-got +want):\n%s", diff)
 	}
 }
 

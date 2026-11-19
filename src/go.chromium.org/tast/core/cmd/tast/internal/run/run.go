@@ -104,10 +104,13 @@ func prepareEnv(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
 	map[string]*protocol.DUTInfo, []*protocol.PushedFilesInfoForDUT, error) {
 	var pushedFilesInfo []*protocol.PushedFilesInfoForDUT
 	dutInfo := make(map[string]*protocol.DUTInfo)
-	if err := prepare.SetUpRemotePrivateBundle(ctx, cfg, drv); err != nil {
+	// Reuse the DUTInfo fetched while setting up remote private bundles so the
+	// primary DUT does not run GetDUTInfo twice before tests start.
+	prefetchedDUTInfo, err := prepare.SetUpRemotePrivateBundle(ctx, cfg, drv)
+	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to prepare Host")
 	}
-	primaryDutInfo, pushedExecutables, err := prepare.Prepare(ctx, cfg, drv)
+	primaryDutInfo, pushedExecutables, err := prepare.Prepare(ctx, cfg, drv, prefetchedDUTInfo)
 	dutInfo[""] = primaryDutInfo
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to build and push primary DUT")
@@ -120,7 +123,7 @@ func prepareEnv(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
 			return nil, nil, errors.Wrapf(err, "failed to connect to companion DUT %s", dut)
 		}
 		defer companionDriver.Close(ctx)
-		dutInfo[role], pushedExecutables, err = prepare.Prepare(ctx, cfg, companionDriver)
+		dutInfo[role], pushedExecutables, err = prepare.Prepare(ctx, cfg, companionDriver, nil)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "failed to build and push companion DUT %s", dut)
 		}

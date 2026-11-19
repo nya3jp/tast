@@ -44,44 +44,47 @@ func CheckPrivateBundleFlag(ctx context.Context, cfg *config.Config) error {
 }
 
 // SetUpRemotePrivateBundle prepares target HOST for Private Bundles.
-func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *driver.Driver) error {
+// It returns the DUTInfo retrieved from the primary DUT, or nil if none was
+// fetched.
+func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*protocol.DUTInfo, error) {
 	if driver == nil {
-		return errors.New("driver is nil")
+		return nil, errors.New("driver is nil")
 	}
 
+	var dutInfo *protocol.DUTInfo
 	if !cfg.Build() {
 		if cfg.DownloadPrivateBundles() {
-			var dutInfo *protocol.DUTInfo
-			var err error
 			if config.ShouldConnect(cfg.Target()) {
 				logging.Infof(ctx, "Connecting to DUT to get DUT info for remote private bundle...")
+				var err error
 				dutInfo, err = driver.GetDUTInfo(ctx)
 				if err != nil {
 					logging.Infof(ctx, "Failed to get DUT info: %v", err)
-					return err
+					return nil, err
 				}
 			}
 			if cfg.BuildArtifactsURLOverride() == "" && dutInfo == nil {
-				return errors.New("missing build artifacts URL configuration")
+				return nil, errors.New("missing build artifacts URL configuration")
 			}
 			if err := driver.DownloadPrivateRemoteBundles(ctx, dutInfo); err != nil {
-				return fmt.Errorf("failed downloading Remote private bundles: %v", err)
+				return nil, fmt.Errorf("failed downloading Remote private bundles: %v", err)
 			}
 		} else if err := buildAllRemoteBundlesInChroot(ctx, cfg); err != nil {
-			return fmt.Errorf("failed to check and build remote bundles: %v", err)
+			return nil, fmt.Errorf("failed to check and build remote bundles: %v", err)
 		}
 	} else if err := buildRemoteBundles(ctx, cfg); err != nil {
 		// Build all the remote bundles.
-		return err
+		return nil, err
 	}
 
 	logging.Infof(ctx, "SetUpRemotePrivateBundle completed successfully.")
-	return nil
+	return dutInfo, nil
 }
 
 // Prepare prepares target DUT for running tests.
-// It returns the DUTInfo for the primary DUT.
-func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (
+// If dutInfo is non-nil and cfg.Build() is false, it reuses dutInfo instead of
+// querying the DUT again. It returns the DUTInfo for the primary DUT.
+func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver, dutInfo *protocol.DUTInfo) (
 	*protocol.DUTInfo, map[string]string, error) {
 
 	// Do not build or push to DUT as we dont have access to it.
@@ -99,7 +102,7 @@ func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (
 		}, nil, nil
 	}
 
-	dutInfo, pushedExcutables, err := prepareDUT(ctx, cfg, driver)
+	dutInfo, pushedExcutables, err := prepareDUT(ctx, cfg, driver, dutInfo)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to prepare DUT %s: %v", cfg.Target(), err)
 	}
@@ -160,7 +163,7 @@ func buildAllRemoteBundlesInChroot(ctx context.Context, cfg *config.Config) erro
 }
 
 // prepareDUT prepares the DUT for running tests and downloads private test bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
+func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo) (
 	*protocol.DUTInfo, map[string]string, error) {
 	var pushedExcutables map[string]string
 	if cfg.Build() {
@@ -175,25 +178,31 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
 		if err != nil {
 			return nil, nil, err
 		}
+		// Re-query DUTInfo after pushing newly built binaries.
+		dutInfo = nil
 	}
 
 	// Stream log files from the DUT.
 	streamLogs(ctx, cfg, drv)
 
-	// Now that local_test_runner is prepared, we can retrieve DUTInfo.
-	// It is needed in DownloadPrivateBundles below.
-	dutInfo, err := getDUTInfo(ctx, cfg, drv)
+	// Now that local_test_runner is prepared, retrieve DUTInfo if it was not
+	// already fetched. It is needed in DownloadPrivateLocalBundles below.
+	dutInfo, err := getDUTInfo(ctx, cfg, drv, dutInfo)
 	if err != nil {
 		return nil, nil, err
 	}
 	return dutInfo, pushedExcutables, nil
 }
 
-// getDUTInfo downloads private bundles and returns the DUT info.
-func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*protocol.DUTInfo, error) {
-	dutInfo, err := drv.GetDUTInfo(ctx)
-	if err != nil {
-		return nil, err
+// getDUTInfo reuses dutInfo if non-nil (otherwise queries the DUT), downloads
+// private local bundles if configured, and returns the DUT info.
+func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo) (*protocol.DUTInfo, error) {
+	if dutInfo == nil {
+		var err error
+		dutInfo, err = drv.GetDUTInfo(ctx)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if cfg.DownloadPrivateBundles() {

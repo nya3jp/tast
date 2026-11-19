@@ -189,7 +189,7 @@ func TestPrepare(t *gotesting.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *gotesting.T) {
-			gotDUTInfo, _, err := Prepare(ctx, tc.cfg, tc.drv)
+			gotDUTInfo, _, err := Prepare(ctx, tc.cfg, tc.drv, nil)
 			if err != nil {
 				t.Errorf("Unexpected error in Prepare(): %v", err)
 			}
@@ -240,7 +240,10 @@ func TestSetupPrivateBundles(t *gotesting.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *gotesting.T) {
-			err := SetUpRemotePrivateBundle(ctx, tc.cfg, tc.drv)
+			gotDUTInfo, err := SetUpRemotePrivateBundle(ctx, tc.cfg, tc.drv)
+			if gotDUTInfo != nil {
+				t.Errorf("SetUpRemotePrivateBundle() returned DUTInfo %v, want nil", gotDUTInfo)
+			}
 
 			if tc.wantErr != nil {
 				if err == nil {
@@ -254,5 +257,83 @@ func TestSetupPrivateBundles(t *gotesting.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestSetUpRemotePrivateBundleAndPrepareReuseDUTInfo(t *gotesting.T) {
+	const artifactsURL = "gs://example-bucket/build/"
+	wantDUTInfo := &protocol.DUTInfo{
+		DefaultBuildArtifactsUrl: artifactsURL,
+		OsVersion:                "R160-16891.0.0",
+	}
+
+	var getDUTInfoCalls int
+	var remoteURL, localURL string
+	env := runtest.SetUp(
+		t,
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			getDUTInfoCalls++
+			return &protocol.GetDUTInfoResponse{DutInfo: wantDUTInfo}, nil
+		}),
+		runtest.WithDownloadPrivateRemoteBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			remoteURL = req.GetBuildArtifactUrl()
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+		runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			localURL = req.GetBuildArtifactUrl()
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Build = false
+		cfg.DownloadPrivateBundles = true
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	prefetched, err := SetUpRemotePrivateBundle(ctx, cfg, drv)
+	if err != nil {
+		t.Fatalf("SetUpRemotePrivateBundle() failed: %v", err)
+	}
+	if diff := cmp.Diff(prefetched, wantDUTInfo, protocmp.Transform()); diff != "" {
+		t.Fatalf("SetUpRemotePrivateBundle() DUTInfo mismatch (-got +want):\n%s", diff)
+	}
+	if remoteURL != artifactsURL {
+		t.Errorf("DownloadPrivateRemoteBundles URL = %q, want %q", remoteURL, artifactsURL)
+	}
+
+	gotDUTInfo, _, err := Prepare(ctx, cfg, drv, prefetched)
+	if err != nil {
+		t.Fatalf("Prepare() failed: %v", err)
+	}
+	if diff := cmp.Diff(gotDUTInfo, wantDUTInfo, protocmp.Transform()); diff != "" {
+		t.Errorf("Prepare() DUTInfo mismatch (-got +want):\n%s", diff)
+	}
+	if localURL != artifactsURL {
+		t.Errorf("DownloadPrivateLocalBundles URL = %q, want %q", localURL, artifactsURL)
+	}
+	if getDUTInfoCalls != 1 {
+		t.Errorf("GetDUTInfo calls = %d, want 1", getDUTInfoCalls)
+	}
+
+	// Passing nil should query GetDUTInfo again and return the fetched info.
+	localURL = ""
+	gotDUTInfo, _, err = Prepare(ctx, cfg, drv, nil)
+	if err != nil {
+		t.Fatalf("Prepare(nil) failed: %v", err)
+	}
+	if diff := cmp.Diff(gotDUTInfo, wantDUTInfo, protocmp.Transform()); diff != "" {
+		t.Errorf("Prepare(nil) DUTInfo mismatch (-got +want):\n%s", diff)
+	}
+	if localURL != artifactsURL {
+		t.Errorf("DownloadPrivateLocalBundles URL after Prepare(nil) = %q, want %q", localURL, artifactsURL)
+	}
+	if getDUTInfoCalls != 2 {
+		t.Errorf("GetDUTInfo calls after Prepare(nil) = %d, want 2", getDUTInfoCalls)
 	}
 }

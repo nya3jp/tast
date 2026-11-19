@@ -7,7 +7,10 @@ package devserver
 import (
 	"context"
 	"fmt"
+	"net"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"go.chromium.org/tast/core/internal/logging"
@@ -47,6 +50,17 @@ func NewClient(ctx context.Context, devservers []string,
 		return NewPseudoClient(), nil
 	}
 
+	// On CloudBots, lab devservers from -devservers are reachable from the DUT
+	// and servo host (so they must remain in CloudStorage.Devservers()), but
+	// are unreachable from the host container. When a local ephemeral devserver
+	// is present, probe only loopback URLs so NewRealClient does not wait the
+	// full 10s /check_health timeout.
+	selected := selectDevserversForClient(devservers)
+	if len(selected) < len(devservers) {
+		logging.Infof(ctx, "CLOUDBOTS_LAB_DOMAIN is set; probing only loopback devservers %v of %v", selected, devservers)
+	}
+	devservers = selected
+
 	const timeout = 10 * time.Second
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -64,4 +78,33 @@ func NewClient(ctx context.Context, devservers []string,
 		logging.Infof(ctx, "Devserver connection status from %s: %s", exe, cl.Status())
 	}
 	return cl, nil
+}
+
+func selectDevserversForClient(devservers []string) []string {
+	if os.Getenv("CLOUDBOTS_LAB_DOMAIN") == "" {
+		return devservers
+	}
+	var loopback []string
+	for _, rawURL := range devservers {
+		if isLoopbackURL(rawURL) {
+			loopback = append(loopback, rawURL)
+		}
+	}
+	if len(loopback) == 0 {
+		return devservers
+	}
+	return loopback
+}
+
+func isLoopbackURL(rawURL string) bool {
+	u, err := url.Parse(rawURL)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
+		return false
+	}
+	host := u.Hostname()
+	if strings.EqualFold(host, "localhost") {
+		return true
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
 }

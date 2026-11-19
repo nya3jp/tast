@@ -7,12 +7,16 @@ package testing
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"go.chromium.org/tast/core/internal/devserver"
+	"go.chromium.org/tast/core/internal/devserver/devservertest"
 	"go.chromium.org/tast/core/internal/fakedutserver"
 	"go.chromium.org/tast/core/internal/faketlw"
 )
@@ -350,5 +354,55 @@ func TestCloudStorageDUTServerStageMissing(t *testing.T) {
 	}
 	if !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("Stage failed with unexpected error: ", err)
+	}
+}
+
+func TestCloudStorageCloudBotsPreservesDevservers(t *testing.T) {
+	const (
+		fakeURL     = "gs://a/b/c"
+		fakeContent = "hello"
+		labURL      = "http://192.0.2.1:8082"
+	)
+
+	t.Setenv("CLOUDBOTS_LAB_DOMAIN", "example.com")
+	srv, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
+		{URL: fakeURL, Data: []byte(fakeContent)},
+	}))
+	if err != nil {
+		t.Fatal("devservertest.NewServer() failed: ", err)
+	}
+	defer srv.Close()
+
+	devservers := []string{srv.URL, labURL}
+	cs := NewCloudStorage(devservers, "", "", "", "", "", "")
+
+	if diff := cmp.Diff(cs.Devservers(), devservers); diff != "" {
+		t.Errorf("NewCloudStorage(%q).Devservers() mismatch (-got +want):\n%s", devservers, diff)
+	}
+
+	r, err := cs.Open(t.Context(), fakeURL)
+	if err != nil {
+		t.Fatalf("cs.Open(%q) failed: %v", fakeURL, err)
+	}
+	defer r.Close()
+	b, err := io.ReadAll(r)
+	if err != nil {
+		t.Fatalf("io.ReadAll() after cs.Open(%q) failed: %v", fakeURL, err)
+	}
+	if got := string(b); got != fakeContent {
+		t.Errorf("cs.Open(%q) returned %q; want %q", fakeURL, got, fakeContent)
+	}
+
+	rc, ok := cs.cl.(*devserver.RealClient)
+	if !ok {
+		t.Fatalf("cs.cl = %T; want *devserver.RealClient", cs.cl)
+	}
+	wantStatus := fmt.Sprintf("[[%s UP]]", srv.URL)
+	if got := rc.Status(); got != wantStatus {
+		t.Errorf("cs.cl.Status() = %q; want %q", got, wantStatus)
+	}
+	wantDevservers := []string{srv.URL, labURL}
+	if diff := cmp.Diff(cs.Devservers(), wantDevservers); diff != "" {
+		t.Errorf("cs.Devservers() after cs.Open(%q) mismatch (-got +want):\n%s", fakeURL, diff)
 	}
 }

@@ -113,6 +113,42 @@ all `test` system images (non-`test` system images are not supposed by Tast).
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 [Go in ChromiumOS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 
+## Speeding up repeated runs
+
+When you are iterating on one or a few tests on your own DUT, you can skip some
+of the work that `tast run` does on every run (omit `-build=false` if you are
+editing the tests themselves):
+
+```shell
+tast run -build=false -sysinfo=false -waituntilready=false -skipremotebundle \
+    -dutinfocache <target> <test-pattern>
+```
+
+On a low-end DUT, these flags save 15 to 20 seconds per run of a short test.
+Each flag below gives up something in return:
+
+| Flag | What it skips | Caveat |
+|------|---------------|--------|
+| `-build=false` | Building and pushing the local test bundle and test data files (see [above]) | Local tests and test data files come from installed copies, without your changes |
+| `-sysinfo=false` | Collecting system logs and crash files from the DUT | Results have no `system_logs/` or `crashes/` |
+| `-waituntilready=false` | Waiting for system services and the TPM, and cleanup such as killing leftover test processes and clearing policies | Tests may fail on a freshly booted DUT or due to state left by earlier runs |
+| `-skipremotebundle` | Starting the remote bundle when all selected tests are local and need no remote fixture other than the [root remote fixture] | The root remote fixture's hooks (e.g. servo, kdump, disk throttling, and cleanup checks) do not run |
+| `-dutinfocache` | Detecting DUT features again on later runs in the same boot | Misses changes made without a reboot, e.g. firmware updates; no effect with `-checktestdeps=false` |
+| `-checktestdeps=false` | Detecting DUT features to skip tests whose [dependencies] are unmet | Tests run even if their software, hardware, or runtime variable dependencies are unmet, and tests reading DUT features with `s.Features` get none |
+
+Tast waits for the DUT to be ready only before local tests that use a
+[precondition] or are skipped, so `-waituntilready=false` does not speed up
+other tests.
+
+Lab runs (CQ and CI) run prebuilt bundles (`-build=false`) and keep the defaults
+for the other flags above, so run your tests once without these flags before
+sending your change for review.
+
+[above]: #Controlling-whether-tests-are-rebuilt
+[dependencies]: test_dependencies.md
+[root remote fixture]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/hooks/root_fixture.go
+[precondition]: writing_tests.md#Preconditions
+
 ## Running tests with Servo
 
 Some tests use servo, a physical device that connects to both the host machine

@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/sys/unix"
@@ -112,11 +113,10 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 		"tast_intel_bundles",
 	}
 
-	for _, b := range privateBundles {
-		logging.Infof(ctx, "Downloading bundle: %s", b)
-		if err := downloadPrivateBundle(ctx, cl, req.GetBuildArtifactUrl(), b, s.scfg.BundleType); err != nil {
-			return nil, errors.Wrapf(err, "failed to download %s", b)
-		}
+	if err := downloadPrivateBundles(ctx, privateBundles, func(ctx context.Context, b string) error {
+		return downloadPrivateBundle(ctx, cl, req.GetBuildArtifactUrl(), b, s.scfg.BundleType)
+	}); err != nil {
+		return nil, err
 	}
 
 	if err := writeStampFile(s.scfg.PrivateBundlesStampPath, req.GetBuildArtifactUrl()); err != nil {
@@ -152,6 +152,36 @@ func (s *testServer) needToDownload(ctx context.Context, buildArtifactURL string
 		return false
 	}
 	return true
+}
+
+// downloadPrivateBundles calls download for all bundles concurrently and
+// returns the error of the first failed bundle in the order of bundles.
+func downloadPrivateBundles(ctx context.Context, bundles []string, download func(ctx context.Context, bundle string) error) error {
+	// The bundle archives are built from disjoint sets of files (e.g. the
+	// crosint and crosint_intel bundles and their data directories), so they
+	// can be downloaded and extracted into the same directories concurrently.
+	errs := make([]error, len(bundles))
+	var wg sync.WaitGroup
+	for i, b := range bundles {
+		wg.Add(1)
+		go func(i int, b string) {
+			defer wg.Done()
+			logging.Infof(ctx, "Downloading bundle: %s", b)
+			if err := download(ctx, b); err != nil {
+				// Only the first error is returned, so log every failure.
+				logging.Infof(ctx, "Failed to download %s: %v", b, err)
+				errs[i] = errors.Wrapf(err, "failed to download %s", b)
+			}
+		}(i, b)
+	}
+	wg.Wait()
+
+	for _, err := range errs {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // downloadPrivateBundle downloads a single private bundle.
@@ -217,7 +247,7 @@ func localBundleDownload(ctx context.Context, tf *os.File) error {
 	if err := cmd.Run(); err != nil {
 		return errors.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
 	}
-	logging.Info(ctx, "Local bundle download finished successfully")
+	logging.Infof(ctx, "Local bundle download finished successfully: %s", tf.Name())
 	return nil
 }
 
@@ -237,7 +267,7 @@ func remoteBundleDownload(ctx context.Context, tf *os.File) error {
 	if err := tarCmd.Run(); err != nil {
 		return errors.Errorf("failed to extract %s: %v", strings.Join(tarCmd.Args, " "), err)
 	}
-	logging.Info(ctx, "Remote bundle download finished successfully")
+	logging.Infof(ctx, "Remote bundle download finished successfully: %s", tf.Name())
 	return nil
 }
 

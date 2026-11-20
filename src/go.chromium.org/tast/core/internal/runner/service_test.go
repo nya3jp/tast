@@ -261,6 +261,63 @@ func TestTestServerStreamFileNotExist(t *gotesting.T) {
 	}
 }
 
+func TestTestServerDownloadPrivateBundles(t *gotesting.T) {
+	const artifactsURL = "gs://bucket/build/"
+	archives := []string{
+		artifactsURL + "tast_bundles.tar.bz2",
+		artifactsURL + "tast_intel_bundles.tar.bz2",
+	}
+
+	// Hold each stage request until all archives are being staged, which
+	// happens only if they are downloaded concurrently.
+	var mu sync.Mutex
+	staging := make(map[string]bool)
+	allStaging := make(chan struct{})
+	var files []*devservertest.File
+	for _, a := range archives {
+		files = append(files, &devservertest.File{URL: a, Data: []byte(a)})
+	}
+	ds, err := devservertest.NewServer(devservertest.Files(files), devservertest.StageHook(func(gsURL string) error {
+		mu.Lock()
+		if !staging[gsURL] {
+			staging[gsURL] = true
+			if len(staging) == len(archives) {
+				close(allStaging)
+			}
+		}
+		mu.Unlock()
+		select {
+		case <-allStaging:
+		case <-time.After(10 * time.Second):
+			t.Errorf("%s was not staged concurrently with the other archives", gsURL)
+		}
+		return nil
+	}))
+	if err != nil {
+		t.Fatal("devservertest.NewServer failed: ", err)
+	}
+	defer ds.Close()
+
+	stampPath := filepath.Join(t.TempDir(), "stamp")
+	// An empty BundleType skips extracting the archives.
+	s := newTestServer(&StaticConfig{PrivateBundlesStampPath: stampPath}, nil, nil)
+	if _, err := s.DownloadPrivateBundles(t.Context(), &protocol.DownloadPrivateBundlesRequest{
+		ServiceConfig:    &protocol.ServiceConfig{Devservers: []string{ds.URL}},
+		BuildArtifactUrl: artifactsURL,
+	}); err != nil {
+		t.Fatal("DownloadPrivateBundles failed: ", err)
+	}
+
+	if diff := cmp.Diff(staging, map[string]bool{archives[0]: true, archives[1]: true}); diff != "" {
+		t.Errorf("Staged archives mismatch (-got +want):\n%s", diff)
+	}
+	if b, err := os.ReadFile(stampPath); err != nil {
+		t.Error("Failed to read the stamp file: ", err)
+	} else if got := string(b); got != artifactsURL {
+		t.Errorf("Stamp file content = %q; want %q", got, artifactsURL)
+	}
+}
+
 func TestTestServerDownloadPrivateBundlesNotFound(t *gotesting.T) {
 	const artifactsURL = "gs://bucket/build/"
 
@@ -367,6 +424,99 @@ func TestDownloadPrivateBundleOpenError(t *gotesting.T) {
 			// os.IsNotExist for real ENOENT errors.
 			if _, err := os.Stat(filepath.Join(t.TempDir(), "missing")); !os.IsNotExist(err) {
 				t.Errorf("os.IsNotExist(%v) = false; want true", err)
+			}
+		})
+	}
+}
+
+func TestDownloadPrivateBundlesWaitsForAll(t *gotesting.T) {
+	bundles := []string{"tast_bundles", "tast_intel_bundles"}
+	errFirst := errors.New("tast_bundles failed")
+	errSecond := errors.New("tast_intel_bundles failed")
+	for _, tc := range []struct {
+		name    string
+		order   []string         // order in which the downloads return
+		errs    map[string]error // errors returned by the downloads
+		wantErr error
+		wantMsg string
+	}{
+		{
+			name:    "first_fails_first",
+			order:   []string{"tast_bundles", "tast_intel_bundles"},
+			errs:    map[string]error{"tast_bundles": errFirst},
+			wantErr: errFirst,
+			wantMsg: "failed to download tast_bundles: tast_bundles failed",
+		},
+		{
+			name:    "second_fails_first",
+			order:   []string{"tast_intel_bundles", "tast_bundles"},
+			errs:    map[string]error{"tast_intel_bundles": errSecond},
+			wantErr: errSecond,
+			wantMsg: "failed to download tast_intel_bundles: tast_intel_bundles failed",
+		},
+		{
+			name:    "both_fail",
+			order:   []string{"tast_intel_bundles", "tast_bundles"},
+			errs:    map[string]error{"tast_bundles": errFirst, "tast_intel_bundles": errSecond},
+			wantErr: errFirst,
+			wantMsg: "failed to download tast_bundles: tast_bundles failed",
+		},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			// Each download returns only after the previous one in tc.order,
+			// so the downloads must run concurrently. The last one also waits
+			// a bit to catch downloadPrivateBundles returning before it.
+			bundleReturned := make(map[string]chan struct{})
+			for _, b := range bundles {
+				bundleReturned[b] = make(chan struct{})
+			}
+			returned := make(chan struct{})
+			var downloads sync.WaitGroup
+			downloads.Add(len(bundles))
+			var mu sync.Mutex
+			var order []string
+			early := false
+			err := downloadPrivateBundles(t.Context(), bundles, func(ctx context.Context, b string) error {
+				defer downloads.Done()
+				defer close(bundleReturned[b])
+				for i, ob := range tc.order {
+					if ob != b {
+						continue
+					}
+					if i > 0 {
+						select {
+						case <-bundleReturned[tc.order[i-1]]:
+						case <-time.After(10 * time.Second):
+							return errors.New("timed out waiting for the previous download")
+						}
+					}
+					if i == len(tc.order)-1 {
+						select {
+						case <-returned:
+							mu.Lock()
+							early = true
+							mu.Unlock()
+						case <-time.After(100 * time.Millisecond):
+						}
+					}
+				}
+				mu.Lock()
+				order = append(order, b)
+				mu.Unlock()
+				return tc.errs[b]
+			})
+			close(returned)
+			downloads.Wait()
+			if early {
+				t.Error("downloadPrivateBundles returned before all downloads returned")
+			}
+			if !errors.Is(err, tc.wantErr) {
+				t.Errorf("downloadPrivateBundles returned error %v; want error wrapping %v", err, tc.wantErr)
+			} else if err.Error() != tc.wantMsg {
+				t.Errorf("downloadPrivateBundles returned error %q; want %q", err, tc.wantMsg)
+			}
+			if diff := cmp.Diff(order, tc.order); diff != "" {
+				t.Errorf("Download order mismatch (-got +want):\n%s", diff)
 			}
 		})
 	}

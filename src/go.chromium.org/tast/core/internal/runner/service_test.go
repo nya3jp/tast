@@ -6,9 +6,15 @@ package runner
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
+	"sync"
 	gotesting "testing"
 	"time"
 
@@ -16,6 +22,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"go.chromium.org/tast/core/internal/bundle/fakebundle"
+	"go.chromium.org/tast/core/internal/devserver/devservertest"
 	"go.chromium.org/tast/core/internal/protocol"
 	"go.chromium.org/tast/core/internal/protocol/protocoltest"
 	"go.chromium.org/tast/core/internal/rpc"
@@ -251,5 +258,116 @@ func TestTestServerStreamFileNotExist(t *gotesting.T) {
 	}
 	if _, err := stream.Recv(); err == nil {
 		t.Fatal("StreamFile failed to return error for non-existing file")
+	}
+}
+
+func TestTestServerDownloadPrivateBundlesNotFound(t *gotesting.T) {
+	const artifactsURL = "gs://bucket/build/"
+
+	// The devserver has none of the archives and responds "file not found".
+	var mu sync.Mutex
+	var staged []string
+	ds, err := devservertest.NewServer(devservertest.StageHook(func(gsURL string) error {
+		mu.Lock()
+		defer mu.Unlock()
+		staged = append(staged, gsURL)
+		return nil
+	}))
+	if err != nil {
+		t.Fatal("devservertest.NewServer failed: ", err)
+	}
+	defer ds.Close()
+
+	stampPath := filepath.Join(t.TempDir(), "stamp")
+	s := newTestServer(&StaticConfig{PrivateBundlesStampPath: stampPath}, nil, nil)
+	// Missing archives are skipped as not all of them exist for all users.
+	if _, err := s.DownloadPrivateBundles(t.Context(), &protocol.DownloadPrivateBundlesRequest{
+		ServiceConfig:    &protocol.ServiceConfig{Devservers: []string{ds.URL}},
+		BuildArtifactUrl: artifactsURL,
+	}); err != nil {
+		t.Fatal("DownloadPrivateBundles failed: ", err)
+	}
+
+	sort.Strings(staged)
+	want := []string{artifactsURL + "tast_bundles.tar.bz2", artifactsURL + "tast_intel_bundles.tar.bz2"}
+	if diff := cmp.Diff(staged, want); diff != "" {
+		t.Errorf("Staged archives mismatch (-got +want):\n%s", diff)
+	}
+	if b, err := os.ReadFile(stampPath); err != nil {
+		t.Error("Failed to read the stamp file: ", err)
+	} else if got := string(b); got != artifactsURL {
+		t.Errorf("Stamp file content = %q; want %q", got, artifactsURL)
+	}
+}
+
+func TestTestServerDownloadPrivateBundlesFailure(t *gotesting.T) {
+	ds, err := devservertest.NewServer(devservertest.Down())
+	if err != nil {
+		t.Fatal("devservertest.NewServer failed: ", err)
+	}
+	defer ds.Close()
+
+	stampPath := filepath.Join(t.TempDir(), "stamp")
+	s := newTestServer(&StaticConfig{PrivateBundlesStampPath: stampPath}, nil, nil)
+	_, err = s.DownloadPrivateBundles(t.Context(), &protocol.DownloadPrivateBundlesRequest{
+		ServiceConfig:    &protocol.ServiceConfig{Devservers: []string{ds.URL}},
+		BuildArtifactUrl: "gs://bucket/build/",
+	})
+	// The failure is reported rather than skipped as a missing archive.
+	const wantPrefix = "failed to download tast_bundles: "
+	if err == nil || !strings.HasPrefix(err.Error(), wantPrefix) || errors.Is(err, os.ErrNotExist) {
+		t.Errorf("DownloadPrivateBundles returned error %v; want non-ErrNotExist error starting with %q", err, wantPrefix)
+	}
+	if _, err := os.Stat(stampPath); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("os.Stat(%q) error = %v; want %v", stampPath, err, os.ErrNotExist)
+	}
+}
+
+// openErrorClient is a devserver.Client that fails to open any file.
+type openErrorClient struct {
+	err error
+}
+
+func (c *openErrorClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+	return nil, c.err
+}
+
+func (c *openErrorClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) {
+	return nil, c.err
+}
+
+func (c *openErrorClient) TearDown() error {
+	return nil
+}
+
+func TestDownloadPrivateBundleOpenError(t *gotesting.T) {
+	for _, tc := range []struct {
+		name    string
+		err     error
+		wantErr bool
+	}{
+		{
+			name: "wrapped_not_exist",
+			err:  fmt.Errorf("failed to download from devserver: %w", os.ErrNotExist),
+		},
+		{
+			name:    "other_error",
+			err:     errors.New("devserver is down"),
+			wantErr: true,
+		},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			err := downloadPrivateBundle(t.Context(), &openErrorClient{tc.err}, "gs://bucket/build/", "tast_bundles", Local)
+			if tc.wantErr && !errors.Is(err, tc.err) {
+				t.Errorf("downloadPrivateBundle returned error %v; want %v", err, tc.err)
+			} else if !tc.wantErr && err != nil {
+				t.Errorf("downloadPrivateBundle failed: %v", err)
+			}
+			// The error must not replace os.ErrNotExist, which would break
+			// os.IsNotExist for real ENOENT errors.
+			if _, err := os.Stat(filepath.Join(t.TempDir(), "missing")); !os.IsNotExist(err) {
+				t.Errorf("os.IsNotExist(%v) = false; want true", err)
+			}
+		})
 	}
 }

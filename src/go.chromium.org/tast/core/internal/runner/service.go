@@ -162,7 +162,7 @@ func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBa
 
 	r, err := cl.Open(ctx, archiveURL)
 	if err != nil {
-		if errors.As(err, &os.ErrNotExist) {
+		if errors.Is(err, os.ErrNotExist) {
 			// Not all private bundles are available for all users.
 			// It is fine to not finding certain bundles for certain
 			// users.

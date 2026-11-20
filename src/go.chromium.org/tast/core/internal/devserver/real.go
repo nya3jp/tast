@@ -362,6 +362,9 @@ func (c *RealClient) sendStageRequest(ctx context.Context, req *http.Request) (r
 	switch res.StatusCode {
 	case http.StatusOK:
 		return false, nil
+	case http.StatusNotFound:
+		// The ephemeral devserver responds with 404 for a missing file.
+		return false, os.ErrNotExist
 	case http.StatusInternalServerError:
 		out, _ := io.ReadAll(res.Body)
 		s := scrapeInternalError(out)

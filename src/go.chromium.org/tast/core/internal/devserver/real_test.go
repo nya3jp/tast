@@ -9,9 +9,11 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"reflect"
 	"sort"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -125,6 +127,37 @@ func TestRealClientNotFoundStage(t *testing.T) {
 		t.Error("Stage unexpectedly succeeded: ", fileURL)
 	} else if !os.IsNotExist(err) {
 		t.Errorf("Stage returned %q; want %q", err, os.ErrNotExist)
+	}
+}
+
+// TestRealClientNotFoundStage404 tests that a stage request answered with
+// 404, as the ephemeral devserver does for a missing file, is not retried and
+// reports os.ErrNotExist.
+func TestRealClientNotFoundStage404(t *testing.T) {
+	var stageCalls int32
+	mux := http.NewServeMux()
+	mux.HandleFunc("/check_health", func(w http.ResponseWriter, r *http.Request) {})
+	mux.HandleFunc("/is_staged", func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, "False")
+	})
+	mux.HandleFunc("/stage", func(w http.ResponseWriter, r *http.Request) {
+		atomic.AddInt32(&stageCalls, 1)
+		http.Error(w, "file not found", http.StatusNotFound)
+	})
+	s := httptest.NewServer(mux)
+	defer s.Close()
+
+	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{1 * time.Millisecond}}
+	cl := devserver.NewRealClient(t.Context(), []string{s.URL}, o)
+
+	if r, err := cl.Open(t.Context(), notFoundURL); err == nil {
+		r.Close()
+		t.Error("Open unexpectedly succeeded")
+	} else if !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("Open returned %q; want %q", err, os.ErrNotExist)
+	}
+	if n := atomic.LoadInt32(&stageCalls); n != 1 {
+		t.Errorf("Got %d stage requests; want 1", n)
 	}
 }
 

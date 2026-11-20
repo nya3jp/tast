@@ -179,7 +179,13 @@ func (e *Ephemeral) handleStage(w http.ResponseWriter, r *http.Request) {
 			return fmt.Errorf("%s failed: %v %s", strings.Join(cmd.Args, " "), err, string(out))
 		}
 
-		return os.Link(tf.Name(), savePath)
+		// Another request may have staged the same file meanwhile, e.g. via
+		// the ephemeral devservers for the host and the DUT, which share
+		// cacheDir and stage private bundles concurrently.
+		if err := os.Link(tf.Name(), savePath); err != nil && !os.IsExist(err) {
+			return err
+		}
+		return nil
 	}(); err != nil {
 		writeError(w, err)
 		return

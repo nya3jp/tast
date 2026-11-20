@@ -104,13 +104,14 @@ func prepareEnv(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
 	map[string]*protocol.DUTInfo, []*protocol.PushedFilesInfoForDUT, error) {
 	var pushedFilesInfo []*protocol.PushedFilesInfoForDUT
 	dutInfo := make(map[string]*protocol.DUTInfo)
-	// Reuse the DUTInfo fetched while setting up remote private bundles so the
-	// primary DUT does not run GetDUTInfo twice before tests start.
-	prefetchedDUTInfo, err := prepare.SetUpRemotePrivateBundle(ctx, cfg, drv)
+	// Reuse the DUTInfo fetched and the private local bundles downloaded while
+	// setting up remote private bundles so the primary DUT does not repeat them
+	// before tests start.
+	prefetched, err := prepare.SetUpRemotePrivateBundle(ctx, cfg, drv)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to prepare Host")
 	}
-	primaryDutInfo, pushedExecutables, err := prepare.Prepare(ctx, cfg, drv, prefetchedDUTInfo)
+	primaryDutInfo, pushedExecutables, err := prepare.Prepare(ctx, cfg, drv, prefetched)
 	dutInfo[""] = primaryDutInfo
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to build and push primary DUT")

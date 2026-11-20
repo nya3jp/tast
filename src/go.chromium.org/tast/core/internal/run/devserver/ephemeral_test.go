@@ -141,6 +141,61 @@ echo -n "$*" > ${!#}
 	}
 }
 
+// TestStageConcurrentlyStaged checks stage succeeds if another request staged
+// the same file while downloading it.
+func TestStageConcurrentlyStaged(t *testing.T) {
+	// The fake gsutil is in cacheDir. On cp, it stages the file in cacheDir
+	// as another request would do, and then downloads it.
+	td := newTestData(t, `#!/bin/bash
+if [[ "$1" == "-m" && "$2" == "cp" ]]; then
+  mkdir -p "$(dirname "$0")/path/to"
+  echo -n "staged by another request" > "$(dirname "$0")/path/to/file.bin"
+  echo -n "$*" > "${!#}"
+fi
+`)
+	defer td.Close()
+
+	const (
+		stagePath  = "/stage?archive_url=gs://chromiumos-test-assets-public/path/to&files=file.bin"
+		staticPath = "/static/path/to/file.bin"
+	)
+
+	if _, err := td.Get(stagePath); err != nil {
+		t.Fatal("Staging request failed: ", err)
+	}
+
+	got, err := td.Get(staticPath)
+	if err != nil {
+		t.Fatal("Static file request failed: ", err)
+	}
+	if want := "staged by another request"; got != want {
+		t.Errorf("Static file content = %q; want %q", got, want)
+	}
+	if tmps, err := filepath.Glob(filepath.Join(td.cacheDir, ".download.*")); err != nil {
+		t.Error("Failed to list temporary files: ", err)
+	} else if len(tmps) > 0 {
+		t.Errorf("Temporary files remain: %v", tmps)
+	}
+}
+
+// TestStageLinkError checks stage fails if the downloaded file cannot be
+// saved in the cache.
+func TestStageLinkError(t *testing.T) {
+	// On cp, the fake gsutil removes the destination file instead of
+	// downloading it, so that saving it in the cache fails.
+	td := newTestData(t, `#!/bin/bash
+if [[ "$1" == "-m" && "$2" == "cp" ]]; then
+  rm -f "${!#}"
+fi
+`)
+	defer td.Close()
+
+	const stagePath = "/stage?archive_url=gs://chromiumos-test-assets-public/path/to&files=file.bin"
+	if _, err := td.Get(stagePath); err == nil {
+		t.Error("Staging request unexpectedly succeeded")
+	}
+}
+
 // TestExtract checks stage successful and extract fails when requested file is not a tar archive.
 func TestExtractNotTarArchive(t *testing.T) {
 	td := newTestData(t, `#!/bin/bash

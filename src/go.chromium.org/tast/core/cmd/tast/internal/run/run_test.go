@@ -596,7 +596,7 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	}
 	defer ds.Close()
 
-	called := make(map[string]struct{})
+	downloadCalls := make(map[string]int)
 	dutInfoCalls := make(map[string]int)
 	var remoteURL string
 	artifactsURL := func(role string) string {
@@ -604,7 +604,7 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	}
 	makeHandler := func(role string) runtest.DUTOption {
 		return runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
-			called[role] = struct{}{}
+			downloadCalls[role]++
 			want := &protocol.ServiceConfig{Devservers: []string{ds.URL}}
 			if diff := cmp.Diff(req.GetServiceConfig(), want, protocmp.Transform()); diff != "" {
 				t.Errorf("ServiceConfig mismatch (-got +want):\n%s", diff)
@@ -651,9 +651,9 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	if want := artifactsURL("dut0"); remoteURL != want {
 		t.Errorf("DownloadPrivateRemoteBundles BuildArtifactUrl = %q, want %q", remoteURL, want)
 	}
-	wantCalled := map[string]struct{}{"dut0": {}, "dut1": {}, "dut2": {}}
-	if diff := cmp.Diff(called, wantCalled); diff != "" {
-		t.Errorf("DownloadPrivateBundles not called (-got +want):\n%s", diff)
+	wantDownloadCalls := map[string]int{"dut0": 1, "dut1": 1, "dut2": 1}
+	if diff := cmp.Diff(downloadCalls, wantDownloadCalls); diff != "" {
+		t.Errorf("DownloadPrivateBundles call counts mismatch (-got +want):\n%s", diff)
 	}
 	wantDUTInfoCalls := map[string]int{"dut0": 1, "dut1": 1, "dut2": 1}
 	if diff := cmp.Diff(dutInfoCalls, wantDUTInfoCalls); diff != "" {

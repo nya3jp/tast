@@ -9,7 +9,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	gotesting "testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -240,9 +242,9 @@ func TestSetupPrivateBundles(t *gotesting.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *gotesting.T) {
-			gotDUTInfo, err := SetUpRemotePrivateBundle(ctx, tc.cfg, tc.drv)
-			if gotDUTInfo != nil {
-				t.Errorf("SetUpRemotePrivateBundle() returned DUTInfo %v, want nil", gotDUTInfo)
+			gotPrefetched, err := SetUpRemotePrivateBundle(ctx, tc.cfg, tc.drv)
+			if gotPrefetched != nil {
+				t.Errorf("SetUpRemotePrivateBundle() returned %+v, want nil", gotPrefetched)
 			}
 
 			if tc.wantErr != nil {
@@ -267,7 +269,7 @@ func TestSetUpRemotePrivateBundleAndPrepareReuseDUTInfo(t *gotesting.T) {
 		OsVersion:                "R160-16891.0.0",
 	}
 
-	var getDUTInfoCalls int
+	var getDUTInfoCalls, localCalls int
 	var remoteURL, localURL string
 	env := runtest.SetUp(
 		t,
@@ -280,6 +282,7 @@ func TestSetUpRemotePrivateBundleAndPrepareReuseDUTInfo(t *gotesting.T) {
 			return &protocol.DownloadPrivateBundlesResponse{}, nil
 		}),
 		runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			localCalls++
 			localURL = req.GetBuildArtifactUrl()
 			return &protocol.DownloadPrivateBundlesResponse{}, nil
 		}),
@@ -300,11 +303,17 @@ func TestSetUpRemotePrivateBundleAndPrepareReuseDUTInfo(t *gotesting.T) {
 	if err != nil {
 		t.Fatalf("SetUpRemotePrivateBundle() failed: %v", err)
 	}
-	if diff := cmp.Diff(prefetched, wantDUTInfo, protocmp.Transform()); diff != "" {
+	if prefetched == nil {
+		t.Fatal("SetUpRemotePrivateBundle() returned nil, want non-nil *Prefetched")
+	}
+	if diff := cmp.Diff(prefetched.dutInfo, wantDUTInfo, protocmp.Transform()); diff != "" {
 		t.Fatalf("SetUpRemotePrivateBundle() DUTInfo mismatch (-got +want):\n%s", diff)
 	}
 	if remoteURL != artifactsURL {
 		t.Errorf("DownloadPrivateRemoteBundles URL = %q, want %q", remoteURL, artifactsURL)
+	}
+	if localURL != artifactsURL {
+		t.Errorf("DownloadPrivateLocalBundles URL = %q, want %q", localURL, artifactsURL)
 	}
 
 	gotDUTInfo, _, err := Prepare(ctx, cfg, drv, prefetched)
@@ -314,14 +323,15 @@ func TestSetUpRemotePrivateBundleAndPrepareReuseDUTInfo(t *gotesting.T) {
 	if diff := cmp.Diff(gotDUTInfo, wantDUTInfo, protocmp.Transform()); diff != "" {
 		t.Errorf("Prepare() DUTInfo mismatch (-got +want):\n%s", diff)
 	}
-	if localURL != artifactsURL {
-		t.Errorf("DownloadPrivateLocalBundles URL = %q, want %q", localURL, artifactsURL)
-	}
 	if getDUTInfoCalls != 1 {
 		t.Errorf("GetDUTInfo calls = %d, want 1", getDUTInfoCalls)
 	}
+	if localCalls != 1 {
+		t.Errorf("DownloadPrivateLocalBundles calls = %d, want 1", localCalls)
+	}
 
-	// Passing nil should query GetDUTInfo again and return the fetched info.
+	// Passing nil should query GetDUTInfo and download private local bundles
+	// again.
 	localURL = ""
 	gotDUTInfo, _, err = Prepare(ctx, cfg, drv, nil)
 	if err != nil {
@@ -335,5 +345,221 @@ func TestSetUpRemotePrivateBundleAndPrepareReuseDUTInfo(t *gotesting.T) {
 	}
 	if getDUTInfoCalls != 2 {
 		t.Errorf("GetDUTInfo calls after Prepare(nil) = %d, want 2", getDUTInfoCalls)
+	}
+	if localCalls != 2 {
+		t.Errorf("DownloadPrivateLocalBundles calls after Prepare(nil) = %d, want 2", localCalls)
+	}
+}
+
+func TestSetUpRemotePrivateBundleDownloadsConcurrently(t *gotesting.T) {
+	// Each download handler waits for the other one to start, which happens
+	// only if the local and remote downloads run concurrently.
+	localStarted := make(chan struct{})
+	remoteStarted := make(chan struct{})
+	waitFor := func(ch <-chan struct{}, name string) {
+		select {
+		case <-ch:
+		case <-time.After(10 * time.Second):
+			t.Errorf("%s download did not start concurrently", name)
+		}
+	}
+	env := runtest.SetUp(
+		t,
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{DutInfo: &protocol.DUTInfo{DefaultBuildArtifactsUrl: "gs://example-bucket/build/"}}, nil
+		}),
+		runtest.WithDownloadPrivateRemoteBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			close(remoteStarted)
+			waitFor(localStarted, "Local")
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+		runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			close(localStarted)
+			waitFor(remoteStarted, "Remote")
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Build = false
+		cfg.DownloadPrivateBundles = true
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	if _, err := SetUpRemotePrivateBundle(ctx, cfg, drv); err != nil {
+		t.Fatalf("SetUpRemotePrivateBundle() failed: %v", err)
+	}
+}
+
+func TestSetUpRemotePrivateBundleWithoutDUT(t *gotesting.T) {
+	const artifactsURL = "gs://example-bucket/override/"
+	var remoteURL string
+	var localCalls int
+	env := runtest.SetUp(
+		t,
+		runtest.WithDownloadPrivateRemoteBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			remoteURL = req.GetBuildArtifactUrl()
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+		runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			localCalls++
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Target = "-"
+		cfg.Build = false
+		cfg.DownloadPrivateBundles = true
+		cfg.BuildArtifactsURLOverride = artifactsURL
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	prefetched, err := SetUpRemotePrivateBundle(ctx, cfg, drv)
+	if err != nil {
+		t.Fatalf("SetUpRemotePrivateBundle() failed: %v", err)
+	}
+	if prefetched != nil {
+		t.Errorf("SetUpRemotePrivateBundle() returned %+v, want nil", prefetched)
+	}
+	if remoteURL != artifactsURL {
+		t.Errorf("DownloadPrivateRemoteBundles URL = %q, want %q", remoteURL, artifactsURL)
+	}
+	if localCalls != 0 {
+		t.Errorf("DownloadPrivateLocalBundles calls = %d, want 0", localCalls)
+	}
+}
+
+func TestSetUpRemotePrivateBundleLocalDownloadError(t *gotesting.T) {
+	localErr := errors.New("local download failure")
+	var localCalls int
+	env := runtest.SetUp(
+		t,
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{DutInfo: &protocol.DUTInfo{DefaultBuildArtifactsUrl: "gs://example-bucket/build/"}}, nil
+		}),
+		runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			localCalls++
+			return nil, localErr
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Build = false
+		cfg.DownloadPrivateBundles = true
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	// SetUpRemotePrivateBundle leaves reporting the local download error to
+	// Prepare.
+	prefetched, err := SetUpRemotePrivateBundle(ctx, cfg, drv)
+	if err != nil {
+		t.Fatalf("SetUpRemotePrivateBundle() failed: %v", err)
+	}
+	const wantErr = "failed downloading private bundles: "
+	_, _, err = Prepare(ctx, cfg, drv, prefetched)
+	if err == nil || !strings.Contains(err.Error(), wantErr) || !strings.Contains(err.Error(), localErr.Error()) {
+		t.Errorf("Prepare() returned error %v, want one containing %q and %q", err, wantErr, localErr)
+	}
+	if localCalls != 1 {
+		t.Errorf("DownloadPrivateLocalBundles calls = %d, want 1", localCalls)
+	}
+}
+
+func TestSetUpRemotePrivateBundleRemoteDownloadError(t *gotesting.T) {
+	remoteErr := errors.New("remote download failure")
+	for _, tc := range []struct {
+		name string
+		// localErr is returned by the local download. If nil, the local
+		// download is still in progress when the remote download fails.
+		localErr error
+	}{
+		{name: "local_in_progress"},
+		{name: "both_fail", localErr: errors.New("local download failure")},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			localStarted := make(chan struct{})
+			localReturned := make(chan struct{})
+			release := make(chan struct{})
+			var localTimedOut bool
+			env := runtest.SetUp(
+				t,
+				runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+					return &protocol.GetDUTInfoResponse{DutInfo: &protocol.DUTInfo{DefaultBuildArtifactsUrl: "gs://example-bucket/build/"}}, nil
+				}),
+				runtest.WithDownloadPrivateRemoteBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+					// Fail while the local download is in progress, or after
+					// it failed.
+					wait, waitDesc := localStarted, "start"
+					if tc.localErr != nil {
+						wait, waitDesc = localReturned, "return"
+					}
+					select {
+					case <-wait:
+					case <-time.After(10 * time.Second):
+						t.Errorf("Local download did not %s", waitDesc)
+					}
+					return nil, remoteErr
+				}),
+				runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+					defer close(localReturned)
+					close(localStarted)
+					if tc.localErr != nil {
+						return nil, tc.localErr
+					}
+					select {
+					case <-release:
+					case <-time.After(10 * time.Second):
+						localTimedOut = true
+					}
+					return &protocol.DownloadPrivateBundlesResponse{}, nil
+				}),
+			)
+			ctx := env.Context()
+			cfg := env.Config(func(cfg *config.MutableConfig) {
+				cfg.Build = false
+				cfg.DownloadPrivateBundles = true
+			})
+
+			drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+			if err != nil {
+				t.Fatalf("driver.New failed: %v", err)
+			}
+			defer drv.Close(ctx)
+
+			prefetched, err := SetUpRemotePrivateBundle(ctx, cfg, drv)
+			close(release)
+			select {
+			case <-localReturned:
+			case <-time.After(10 * time.Second):
+				t.Fatal("Local download did not return")
+			}
+			// The local download in progress is canceled instead of awaited.
+			if localTimedOut {
+				t.Error("SetUpRemotePrivateBundle() waited for the local download to complete")
+			}
+			const wantErr = "failed downloading Remote private bundles: "
+			if err == nil || !strings.Contains(err.Error(), wantErr) || !strings.Contains(err.Error(), remoteErr.Error()) {
+				t.Errorf("SetUpRemotePrivateBundle() returned error %v, want one containing %q and %q", err, wantErr, remoteErr)
+			}
+			if prefetched != nil {
+				t.Errorf("SetUpRemotePrivateBundle() returned %+v, want nil", prefetched)
+			}
+		})
 	}
 }

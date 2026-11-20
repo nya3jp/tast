@@ -43,17 +43,30 @@ func CheckPrivateBundleFlag(ctx context.Context, cfg *config.Config) error {
 	return nil
 }
 
+// Prefetched holds what SetUpRemotePrivateBundle did for the primary DUT, so
+// that Prepare can reuse it instead of repeating it.
+type Prefetched struct {
+	// dutInfo is the DUTInfo retrieved from the DUT.
+	dutInfo *protocol.DUTInfo
+	// localBundlesErr is the result of downloading private local bundles to
+	// the DUT.
+	localBundlesErr error
+}
+
 // SetUpRemotePrivateBundle prepares target HOST for Private Bundles.
-// It returns the DUTInfo retrieved from the primary DUT, or nil if none was
-// fetched.
-func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*protocol.DUTInfo, error) {
+// When it downloads private bundles with a DUT to connect to, it also gets the
+// DUTInfo and downloads private local bundles to the DUT concurrently, and
+// returns them in Prefetched, including a local download error for Prepare to
+// report. Otherwise it returns nil.
+func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*Prefetched, error) {
 	if driver == nil {
 		return nil, errors.New("driver is nil")
 	}
 
-	var dutInfo *protocol.DUTInfo
+	var prefetched *Prefetched
 	if !cfg.Build() {
 		if cfg.DownloadPrivateBundles() {
+			var dutInfo *protocol.DUTInfo
 			if config.ShouldConnect(cfg.Target()) {
 				logging.Infof(ctx, "Connecting to DUT to get DUT info for remote private bundle...")
 				var err error
@@ -66,8 +79,32 @@ func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *d
 			if cfg.BuildArtifactsURLOverride() == "" && dutInfo == nil {
 				return nil, errors.New("missing build artifacts URL configuration")
 			}
-			if err := driver.DownloadPrivateRemoteBundles(ctx, dutInfo); err != nil {
-				return nil, fmt.Errorf("failed downloading Remote private bundles: %v", err)
+
+			// Download private local bundles to the DUT while downloading
+			// private remote bundles on the host since they are independent.
+			// Only the goroutine below uses the driver's ConnCache, which is not
+			// goroutine-safe, until it finishes: DownloadPrivateRemoteBundles
+			// runs the remote test runner on the host without the connection.
+			localCtx, cancelLocal := context.WithCancel(ctx)
+			defer cancelLocal()
+			var localDone chan error
+			if config.ShouldConnect(cfg.Target()) {
+				localDone = make(chan error, 1)
+				go func() {
+					localDone <- driver.DownloadPrivateLocalBundles(localCtx, dutInfo)
+				}()
+			}
+			remoteErr := driver.DownloadPrivateRemoteBundles(ctx, dutInfo)
+			if localDone != nil {
+				if remoteErr != nil {
+					// The run fails anyway, so stop the local download instead
+					// of waiting for it to complete.
+					cancelLocal()
+				}
+				prefetched = &Prefetched{dutInfo: dutInfo, localBundlesErr: <-localDone}
+			}
+			if remoteErr != nil {
+				return nil, fmt.Errorf("failed downloading Remote private bundles: %v", remoteErr)
 			}
 		} else if err := buildAllRemoteBundlesInChroot(ctx, cfg); err != nil {
 			return nil, fmt.Errorf("failed to check and build remote bundles: %v", err)
@@ -78,13 +115,14 @@ func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *d
 	}
 
 	logging.Infof(ctx, "SetUpRemotePrivateBundle completed successfully.")
-	return dutInfo, nil
+	return prefetched, nil
 }
 
 // Prepare prepares target DUT for running tests.
-// If dutInfo is non-nil and cfg.Build() is false, it reuses dutInfo instead of
-// querying the DUT again. It returns the DUTInfo for the primary DUT.
-func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver, dutInfo *protocol.DUTInfo) (
+// If prefetched is non-nil and cfg.Build() is false, it reuses what
+// SetUpRemotePrivateBundle did instead of querying the DUT and downloading
+// private local bundles again. It returns the DUTInfo for the primary DUT.
+func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver, prefetched *Prefetched) (
 	*protocol.DUTInfo, map[string]string, error) {
 
 	// Do not build or push to DUT as we dont have access to it.
@@ -102,7 +140,7 @@ func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver, dut
 		}, nil, nil
 	}
 
-	dutInfo, pushedExcutables, err := prepareDUT(ctx, cfg, driver, dutInfo)
+	dutInfo, pushedExcutables, err := prepareDUT(ctx, cfg, driver, prefetched)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to prepare DUT %s: %v", cfg.Target(), err)
 	}
@@ -163,7 +201,7 @@ func buildAllRemoteBundlesInChroot(ctx context.Context, cfg *config.Config) erro
 }
 
 // prepareDUT prepares the DUT for running tests and downloads private test bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo) (
+func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver, prefetched *Prefetched) (
 	*protocol.DUTInfo, map[string]string, error) {
 	var pushedExcutables map[string]string
 	if cfg.Build() {
@@ -179,7 +217,7 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver, dut
 			return nil, nil, err
 		}
 		// Re-query DUTInfo after pushing newly built binaries.
-		dutInfo = nil
+		prefetched = nil
 	}
 
 	// Stream log files from the DUT.
@@ -187,16 +225,20 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver, dut
 
 	// Now that local_test_runner is prepared, retrieve DUTInfo if it was not
 	// already fetched. It is needed in DownloadPrivateLocalBundles below.
-	dutInfo, err := getDUTInfo(ctx, cfg, drv, dutInfo)
+	dutInfo, err := getDUTInfo(ctx, cfg, drv, prefetched)
 	if err != nil {
 		return nil, nil, err
 	}
 	return dutInfo, pushedExcutables, nil
 }
 
-// getDUTInfo reuses dutInfo if non-nil (otherwise queries the DUT), downloads
-// private local bundles if configured, and returns the DUT info.
-func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo) (*protocol.DUTInfo, error) {
+// getDUTInfo queries the DUT and downloads private local bundles if
+// configured, unless prefetched holds their results, and returns the DUT info.
+func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver, prefetched *Prefetched) (*protocol.DUTInfo, error) {
+	var dutInfo *protocol.DUTInfo
+	if prefetched != nil {
+		dutInfo = prefetched.dutInfo
+	}
 	if dutInfo == nil {
 		var err error
 		dutInfo, err = drv.GetDUTInfo(ctx)
@@ -206,7 +248,13 @@ func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver, dut
 	}
 
 	if cfg.DownloadPrivateBundles() {
-		if err := drv.DownloadPrivateLocalBundles(ctx, dutInfo); err != nil {
+		var err error
+		if prefetched != nil {
+			err = prefetched.localBundlesErr
+		} else {
+			err = drv.DownloadPrivateLocalBundles(ctx, dutInfo)
+		}
+		if err != nil {
 			return nil, fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 	}

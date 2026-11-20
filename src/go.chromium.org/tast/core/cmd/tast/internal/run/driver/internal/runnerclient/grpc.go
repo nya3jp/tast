@@ -172,7 +172,14 @@ func (c *Client) DownloadPrivateBundles(ctx context.Context, req *protocol.Downl
 }
 
 // ListTests enumerates tests matching patterns.
-func (c *Client) ListTests(ctx context.Context, patterns []string, features *protocol.Features) (tests []*drivercore.BundleEntity, retErr error) {
+func (c *Client) ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*drivercore.BundleEntity, error) {
+	tests, _, err := c.ListTestsAndFixtures(ctx, patterns, features)
+	return tests, err
+}
+
+// ListTestsAndFixtures enumerates tests matching patterns and all fixtures
+// with a single ListEntities request.
+func (c *Client) ListTestsAndFixtures(ctx context.Context, patterns []string, features *protocol.Features) (tests, fixtures []*drivercore.BundleEntity, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "listing tests")
@@ -181,7 +188,7 @@ func (c *Client) ListTests(ctx context.Context, patterns []string, features *pro
 
 	matcher, err := testing.NewMatcher(patterns)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	logging.Infof(ctx, "Sending ListEntities Request to test runner (hops=%v)", c.hops)
@@ -211,24 +218,31 @@ func (c *Client) ListTests(ctx context.Context, patterns []string, features *pro
 		}
 		return nil
 	}, &testingutil.PollOptions{Timeout: 7 * time.Minute, Interval: 5 * time.Second}); err != nil {
-		return nil, errors.Wrap(err, "failed to send ListEntities request after multiple retries")
+		return nil, nil, errors.Wrap(err, "failed to send ListEntities request after multiple retries")
 	}
 	logging.Info(ctx, "Got ListEntities Response from local test runner")
 
 	for _, e := range res.GetEntities() {
-		if e.GetEntity().GetType() != protocol.EntityType_TEST {
-			continue
+		switch e.GetEntity().GetType() {
+		case protocol.EntityType_TEST:
+			if !matcher.Match(e.GetEntity().GetName(), e.GetEntity().GetAttributes()) {
+				continue
+			}
+			e.Hops = int32(c.hops)
+			tests = append(tests, &drivercore.BundleEntity{
+				Bundle:   e.GetEntity().GetLegacyData().GetBundle(),
+				Resolved: e,
+			})
+		case protocol.EntityType_FIXTURE:
+			e.Hops = int32(c.hops)
+			fixtures = append(fixtures, &drivercore.BundleEntity{
+				Bundle:   e.GetEntity().GetLegacyData().GetBundle(),
+				Resolved: e,
+			})
 		}
-		if !matcher.Match(e.GetEntity().GetName(), e.GetEntity().GetAttributes()) {
-			continue
-		}
-		e.Hops = int32(c.hops)
-		tests = append(tests, &drivercore.BundleEntity{
-			Bundle:   e.GetEntity().GetLegacyData().GetBundle(),
-			Resolved: e,
-		})
 	}
-	return tests, nil
+	sortFixtures(fixtures)
+	return tests, fixtures, nil
 }
 
 // GlobalRuntimeVars client implementation
@@ -304,6 +318,12 @@ func (c *Client) ListFixtures(ctx context.Context) (fixtures []*drivercore.Bundl
 		})
 	}
 
+	sortFixtures(fixtures)
+	return fixtures, nil
+}
+
+// sortFixtures sorts fixtures by bundle and name.
+func sortFixtures(fixtures []*drivercore.BundleEntity) {
 	sort.Slice(fixtures, func(i, j int) bool {
 		a, b := fixtures[i], fixtures[j]
 		if a.Bundle != b.Bundle {
@@ -311,7 +331,6 @@ func (c *Client) ListFixtures(ctx context.Context) (fixtures []*drivercore.Bundl
 		}
 		return a.Resolved.GetEntity().GetName() < b.Resolved.GetEntity().GetName()
 	})
-	return fixtures, nil
 }
 
 // StreamFile stream a file from the source file at target DUT to a destination

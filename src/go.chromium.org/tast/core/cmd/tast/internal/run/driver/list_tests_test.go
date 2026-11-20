@@ -192,7 +192,7 @@ func TestDriver_ListMatchedLocalTestsDisabled(t *gotesting.T) {
 }
 
 func TestDriver_ListLocalFixtures(t *gotesting.T) {
-	ctx, drv, _ := newDriverForListingTests(t)
+	ctx, drv, features := newDriverForListingTests(t)
 
 	got, err := drv.ListLocalFixtures(ctx)
 	if err != nil {
@@ -207,6 +207,67 @@ func TestDriver_ListLocalFixtures(t *gotesting.T) {
 	}
 	if diff := cmp.Diff(got, want, protocmp.Transform(), protocmp.IgnoreFields(&protocol.EntityLegacyData{}, "timeout")); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
+	}
+
+	// Listing fixtures together with tests returns the same fixtures, also
+	// when the list is reused after the caller modified the returned slice.
+	for i := 0; i < 3; i++ {
+		_, got, err = drv.ListMatchedLocalTestsAndFixtures(ctx, features)
+		if err != nil {
+			t.Fatal("ListMatchedLocalTestsAndFixtures failed: ", err)
+		}
+		if diff := cmp.Diff(got, want, protocmp.Transform(), protocmp.IgnoreFields(&protocol.EntityLegacyData{}, "timeout")); diff != "" {
+			t.Errorf("ListMatchedLocalTestsAndFixtures() #%d fixtures mismatch (-got +want):\n%s", i, diff)
+		}
+		got[0] = nil
+	}
+}
+
+func TestDriver_ListMatchedLocalTestsReusesList(t *gotesting.T) {
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1"})
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
+	ctx := env.Context()
+	cfg := env.Config(nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	// list returns the names of local tests listed with features.
+	list := func(features *protocol.Features) []string {
+		t.Helper()
+		tests, err := drv.ListMatchedLocalTests(ctx, features)
+		if err != nil {
+			t.Fatal("ListMatchedLocalTests failed: ", err)
+		}
+		var names []string
+		for i, e := range tests {
+			names = append(names, e.Resolved.GetEntity().GetName())
+			// Callers may modify the returned slice.
+			tests[i] = &driver.BundleEntity{}
+		}
+		return names
+	}
+
+	features := &protocol.Features{CheckDeps: true}
+	if diff := cmp.Diff(list(features), []string{"pkg.Test1"}); diff != "" {
+		t.Errorf("ListMatchedLocalTests() mismatch (-got +want):\n%s", diff)
+	}
+	// Listing with the same features does not ask the DUT again, so a test
+	// added to the bundle later is not found.
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2"})
+	for i := 0; i < 2; i++ {
+		if diff := cmp.Diff(list(features), []string{"pkg.Test1"}); diff != "" {
+			t.Errorf("ListMatchedLocalTests() #%d with the same features mismatch (-got +want):\n%s", i, diff)
+		}
+	}
+	// Listing with other features asks the DUT again, even if the caller
+	// modified the features that it passed before.
+	features.CheckDeps = false
+	if diff := cmp.Diff(list(features), []string{"pkg.Test1", "pkg.Test2"}); diff != "" {
+		t.Errorf("ListMatchedLocalTests() with other features mismatch (-got +want):\n%s", diff)
 	}
 }
 

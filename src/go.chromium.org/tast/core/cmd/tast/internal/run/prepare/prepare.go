@@ -204,6 +204,7 @@ func buildAllRemoteBundlesInChroot(ctx context.Context, cfg *config.Config) erro
 func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver, prefetched *Prefetched) (
 	*protocol.DUTInfo, map[string]string, error) {
 	var pushedExcutables map[string]string
+	var dutInfo *protocol.DUTInfo
 	if cfg.Build() {
 		targetArch, err := getTargetArch(ctx, cfg, drv.SSHConn())
 		if err != nil {
@@ -212,12 +213,16 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver, pre
 		if err := buildLocalBundles(ctx, cfg, targetArch); err != nil {
 			return nil, nil, err
 		}
-		pushedExcutables, err = pushAll(ctx, cfg, drv, targetArch)
+		// pushAll returns DUTInfo retrieved after pushing newly built binaries,
+		// or nil if it is not needed yet.
+		pushedExcutables, dutInfo, err = pushAll(ctx, cfg, drv, targetArch)
 		if err != nil {
 			return nil, nil, err
 		}
-		// Re-query DUTInfo after pushing newly built binaries.
+		// Discard anything prefetched before pushing newly built binaries.
 		prefetched = nil
+	} else if prefetched != nil {
+		dutInfo = prefetched.dutInfo
 	}
 
 	// Stream log files from the DUT.
@@ -225,20 +230,16 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver, pre
 
 	// Now that local_test_runner is prepared, retrieve DUTInfo if it was not
 	// already fetched. It is needed in DownloadPrivateLocalBundles below.
-	dutInfo, err := getDUTInfo(ctx, cfg, drv, prefetched)
+	dutInfo, err := getDUTInfo(ctx, cfg, drv, dutInfo, prefetched)
 	if err != nil {
 		return nil, nil, err
 	}
 	return dutInfo, pushedExcutables, nil
 }
 
-// getDUTInfo queries the DUT and downloads private local bundles if
-// configured, unless prefetched holds their results, and returns the DUT info.
-func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver, prefetched *Prefetched) (*protocol.DUTInfo, error) {
-	var dutInfo *protocol.DUTInfo
-	if prefetched != nil {
-		dutInfo = prefetched.dutInfo
-	}
+// getDUTInfo queries the DUT if dutInfo is nil, downloads private local bundles
+// if configured (unless prefetched holds the result), and returns the DUT info.
+func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo, prefetched *Prefetched) (*protocol.DUTInfo, error) {
 	if dutInfo == nil {
 		var err error
 		dutInfo, err = drv.GetDUTInfo(ctx)
@@ -375,11 +376,12 @@ func getTargetArch(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (targ
 }
 
 // pushAll pushes the freshly built local test runner, local test bundle executable
-// and local test data files to the DUT if necessary. If cfg.mode is
-// ListTestsMode data files are not pushed since they are not needed to build
-// a list of tests.
+// and local test data files to the DUT if necessary. If cfg.Mode() is not
+// RunTestsMode (e.g. ListTestsMode), data files are not pushed and nil DUTInfo
+// is returned. Otherwise it also returns DUTInfo retrieved with the new local
+// test runner, which is needed to find the data files to push.
 func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, targetArch string) (
-	map[string]string, error) {
+	map[string]string, *protocol.DUTInfo, error) {
 	ctx, st := timing.Start(ctx, "push")
 	defer st.End()
 
@@ -387,23 +389,27 @@ func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, target
 	// data files to push.
 	pushedExcutables, err := pushExecutables(ctx, cfg, drv.SSHConn(), targetArch)
 	if err != nil {
-		return nil, fmt.Errorf("failed to push local executables: %v", err)
+		return nil, nil, fmt.Errorf("failed to push local executables: %v", err)
 	}
 
 	if cfg.Mode() != config.RunTestsMode {
-		return nil, nil
+		return nil, nil, nil
 	}
 
-	paths, err := getDataFilePaths(ctx, cfg, drv)
+	dutInfo, err := drv.GetDUTInfo(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get data file list: %v", err)
+		return nil, nil, err
+	}
+	paths, err := getDataFilePaths(ctx, cfg, drv, dutInfo)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get data file list: %v", err)
 	}
 	if len(paths) > 0 {
 		if err := pushDataFiles(ctx, cfg, drv.SSHConn(), cfg.LocalDataDir(), paths); err != nil {
-			return nil, fmt.Errorf("failed to push data files: %v", err)
+			return nil, nil, fmt.Errorf("failed to push data files: %v", err)
 		}
 	}
-	return pushedExcutables, nil
+	return pushedExcutables, dutInfo, nil
 }
 
 // pushExecutables pushes the freshly built local test runner, local test bundle
@@ -459,37 +465,43 @@ func allNeededFixtures(fixtures, tests []*driver.BundleEntity) []*driver.BundleE
 }
 
 // getDataFilePaths returns the paths to data files needed for running
-// cfg.Patterns on hst. The returned paths are relative to the package root,
-// e.g. "go.chromium.org/tast-tests/cros/local/bundle/<bundle>/<category>/data/<filename>".
-func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Driver) (paths []string, err error) {
+// cfg.Patterns on the DUT described by dutInfo. The returned paths are relative
+// to the package root, e.g.
+// "go.chromium.org/tast-tests/cros/local/bundle/<bundle>/<category>/data/<filename>".
+func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo) (paths []string, err error) {
 	ctx, st := timing.Start(ctx, "get_data_paths")
 	defer st.End()
 
 	logging.Debug(ctx, "Getting data file list from target")
 
-	var entities []*driver.BundleEntity // all entities needed to run tests
-
-	// Add tests to entities.
-	// We pass nil DUTInfo here because we don't have a DUTInfo yet. This is
-	// okay but suboptimal; we have to push data files for tests to be
-	// skipped.
-	// TODO(b/192433910): Retrieve DUTInfo in advance and push necessary
-	// data files only.
-	tests, err := drv.ListMatchedLocalTests(ctx, nil)
+	// List tests with the features used to run them, so that data files of
+	// tests to be skipped are not pushed and running tests reuses the list.
+	// Companion DUT features are unknown until all DUTs are prepared, so
+	// multi-DUT runs list tests without features and push data files of all
+	// matched tests.
+	var features *protocol.Features
+	if len(cfg.CompanionDUTs()) == 0 {
+		features = cfg.Features(dutInfo.GetFeatures(), nil)
+	}
+	tests, fixtures, err := drv.ListMatchedLocalTestsAndFixtures(ctx, features)
 	if err != nil {
 		return nil, err
 	}
-	entities = append(entities, tests...)
+
+	var entities []*driver.BundleEntity // all entities needed to run tests
+
+	// Add non-skipped tests to entities.
+	for _, t := range tests {
+		if len(t.Resolved.GetSkip().GetReasons()) == 0 {
+			entities = append(entities, t)
+		}
+	}
 
 	// Add fixtures tests use to entities.
 	// Note that we don't need to disambiguate fixtures from multiple test
 	// bundles since this code path gets called only when -build=true and
 	// thus only a single test bundle is considered.
-	fixtures, err := drv.ListLocalFixtures(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("ListLocalFixtures: %v", err)
-	}
-	entities = append(entities, allNeededFixtures(fixtures, tests)...)
+	entities = append(entities, allNeededFixtures(fixtures, entities)...)
 
 	// Compute data that entities may use.
 	seenPaths := make(map[string]struct{})

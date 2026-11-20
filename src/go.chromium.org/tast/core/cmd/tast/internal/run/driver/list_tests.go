@@ -6,6 +6,9 @@ package driver
 
 import (
 	"context"
+	"slices"
+
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
@@ -28,19 +31,45 @@ func (d *Driver) ListMatchedTests(ctx context.Context, features *protocol.Featur
 // ListMatchedLocalTests enumerates local tests matched with the user-supplied
 // patterns.
 func (d *Driver) ListMatchedLocalTests(ctx context.Context, features *protocol.Features) ([]*BundleEntity, error) {
+	tests, _, err := d.ListMatchedLocalTestsAndFixtures(ctx, features)
+	return tests, err
+}
+
+// ListMatchedLocalTestsAndFixtures enumerates local tests matched with the
+// user-supplied patterns and all local fixtures with a single request to the
+// DUT. Later calls with the same features reuse the result.
+func (d *Driver) ListMatchedLocalTestsAndFixtures(ctx context.Context, features *protocol.Features) (tests, fixtures []*BundleEntity, err error) {
 	if d.localRunnerClient() == nil {
-		return nil, nil
+		return nil, nil, nil
 	}
-	tests, err := d.localRunnerClient().ListTests(ctx, d.cfg.Patterns(), features)
+	// Listing starts the test runner and the bundles on the DUT, and preparing
+	// the DUT lists entities with the same features as running tests.
+	// d.cfg.Patterns() is fixed for d, so the features are the key.
+	if l := d.localEntities; l != nil && proto.Equal(l.features, features) {
+		return slices.Clone(l.tests), slices.Clone(l.fixtures), nil
+	}
+	tests, fixtures, err = d.localRunnerClient().ListTestsAndFixtures(ctx, d.cfg.Patterns(), features)
 	if err != nil {
 		if !d.healthy(ctx) {
 			logging.Infof(ctx, "The connection to DUT %s is not healthy", d.rawTarget)
 		} else {
 			logging.Infof(ctx, "The connection to DUT %s is healthy", d.rawTarget)
 		}
-		return nil, errors.Wrap(err, "failed to list local tests")
+		return nil, nil, errors.Wrap(err, "failed to list local tests")
 	}
-	return tests, nil
+	// Keep copies, as callers may modify features and the returned slices.
+	d.localEntities = &localEntityList{
+		features: proto.Clone(features).(*protocol.Features),
+		tests:    slices.Clone(tests),
+		fixtures: slices.Clone(fixtures),
+	}
+	return tests, fixtures, nil
+}
+
+// localEntityList is the result of listing local entities with features.
+type localEntityList struct {
+	features        *protocol.Features
+	tests, fixtures []*BundleEntity
 }
 
 func (d *Driver) healthy(ctx context.Context) bool {

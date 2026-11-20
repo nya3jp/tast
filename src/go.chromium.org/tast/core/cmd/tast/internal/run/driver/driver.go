@@ -55,6 +55,7 @@ type Driver struct {
 	role             string
 	servoHostInfo    *servo.HostInfo
 	remoteDevservers []string
+	localEntities    *localEntityList
 }
 
 // New establishes a new connection to the target device and returns a Driver.

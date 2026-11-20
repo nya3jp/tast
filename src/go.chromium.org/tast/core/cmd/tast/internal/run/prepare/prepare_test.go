@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -19,6 +20,7 @@ import (
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/runtest"
+	"go.chromium.org/tast/core/internal/dep"
 	"go.chromium.org/tast/core/internal/fakesshserver"
 	"go.chromium.org/tast/core/internal/protocol"
 	"go.chromium.org/tast/core/internal/testing"
@@ -131,7 +133,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	defer drv.Close(ctx)
 
 	// getDataFilePaths should list the tests and return the files needed by them.
-	paths, err := getDataFilePaths(ctx, cfg, drv)
+	paths, err := getDataFilePaths(ctx, cfg, drv, nil)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
@@ -168,6 +170,107 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 	if _, err := os.ReadFile(filepath.Join(cfg.LocalDataDir(), testing.RelativeDataDir(categoryPkg), extFile1)); err == nil {
 		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile1)
+	}
+}
+
+func TestGetDataFilePathsWithFeatures(t *gotesting.T) {
+	const (
+		categoryPkg = "go.chromium.org/tast-tests/cros/local/bundles/bundle/cat"
+		fixtPkg     = "go.chromium.org/tast-tests/cros/local/chrome"
+	)
+	dutInfo := &protocol.DUTInfo{Features: &fwprotocol.DUTFeatures{
+		Software: &fwprotocol.SoftwareFeatures{Available: []string{"mock"}, Unavailable: []string{"dep"}},
+	}}
+
+	for _, tc := range []struct {
+		name      string
+		companion bool
+		wantPaths []string
+		// wantRelist is whether listing tests to run asks the DUT again.
+		wantRelist bool
+	}{
+		{
+			name: "SingleDUT",
+			wantPaths: []string{
+				filepath.Join(categoryPkg, "data/run.txt"),
+				filepath.Join(fixtPkg, "data/fixt_run.txt"),
+			},
+		},
+		{
+			// Companion DUT features are not known yet, so tests are listed
+			// without features.
+			name:      "MultipleDUTs",
+			companion: true,
+			wantPaths: []string{
+				filepath.Join(categoryPkg, "data/run.txt"),
+				filepath.Join(categoryPkg, "data/skip.txt"),
+				filepath.Join(fixtPkg, "data/fixt_run.txt"),
+				filepath.Join(fixtPkg, "data/fixt_skip.txt"),
+			},
+			wantRelist: true,
+		},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			reg := testing.NewRegistry("bundle")
+			reg.AddTestInstance(&testing.TestInstance{
+				Name:    "cat.Run",
+				Pkg:     categoryPkg,
+				Data:    []string{"run.txt"},
+				Fixture: "fixtRun",
+			})
+			reg.AddTestInstance(&testing.TestInstance{
+				Name:         "cat.Skip",
+				Pkg:          categoryPkg,
+				Data:         []string{"skip.txt"},
+				Fixture:      "fixtSkip",
+				SoftwareDeps: map[string]dep.SoftwareDeps{"": {"dep"}},
+			})
+			reg.AddFixtureInstance(&testing.FixtureInstance{Name: "fixtRun", Pkg: fixtPkg, Data: []string{"fixt_run.txt"}})
+			reg.AddFixtureInstance(&testing.FixtureInstance{Name: "fixtSkip", Pkg: fixtPkg, Data: []string{"fixt_skip.txt"}})
+
+			opts := []runtest.EnvOrDUTOption{runtest.WithLocalBundles(reg)}
+			companions := make(map[string]*fwprotocol.DUTFeatures)
+			if tc.companion {
+				opts = append(opts, runtest.WithCompanionDUT("cd1"))
+				companions["cd1"] = dutInfo.GetFeatures()
+			}
+			env := runtest.SetUp(t, opts...)
+			ctx := env.Context()
+			cfg := env.Config(nil)
+			drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+			if err != nil {
+				t.Fatalf("driver.New failed: %v", err)
+			}
+			defer drv.Close(ctx)
+
+			paths, err := getDataFilePaths(ctx, cfg, drv, dutInfo)
+			if err != nil {
+				t.Fatal("getDataFilePaths() failed: ", err)
+			}
+			slices.Sort(paths)
+			if diff := cmp.Diff(paths, tc.wantPaths); diff != "" {
+				t.Errorf("getDataFilePaths() mismatch (-got +want):\n%s", diff)
+			}
+
+			// A test added to the bundle later is found only if listing tests
+			// to run asks the DUT again.
+			reg.AddTestInstance(&testing.TestInstance{Name: "cat.Added"})
+			tests, err := drv.ListMatchedLocalTests(ctx, cfg.Features(dutInfo.GetFeatures(), companions))
+			if err != nil {
+				t.Fatal("ListMatchedLocalTests() failed: ", err)
+			}
+			gotSkips := make(map[string][]string)
+			for _, e := range tests {
+				gotSkips[e.Resolved.GetEntity().GetName()] = e.Resolved.GetSkip().GetReasons()
+			}
+			wantSkips := map[string][]string{"cat.Run": nil, "cat.Skip": {"missing SoftwareDeps: dep"}}
+			if tc.wantRelist {
+				wantSkips["cat.Added"] = nil
+			}
+			if diff := cmp.Diff(gotSkips, wantSkips); diff != "" {
+				t.Errorf("ListMatchedLocalTests() skip reasons mismatch (-got +want):\n%s", diff)
+			}
+		})
 	}
 }
 

@@ -948,6 +948,32 @@ func TestValidateVars_Error(t *gotesting.T) {
 	}
 }
 
+func TestInstantiateVars(t *gotesting.T) {
+	for _, tc := range []struct {
+		name    string
+		vars    []string
+		varDeps []string
+		wantErr bool
+	}{
+		{name: "TestScoped", vars: []string{"testing.TESTINSTANCETEST.foo"}, varDeps: []string{"testing.TESTINSTANCETEST.bar"}},
+		{name: "InvalidVar", vars: []string{"testing.OtherTest.foo"}, wantErr: true},
+		{name: "InvalidVarDep", varDeps: []string{"testing.OtherTest.foo"}, wantErr: true},
+		{name: "Duplicate", vars: []string{"foo"}, varDeps: []string{"foo"}, wantErr: true},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			_, err := instantiate(&Test{
+				Func:    TESTINSTANCETEST,
+				Vars:    tc.vars,
+				VarDeps: tc.varDeps,
+				Params:  []Param{{Name: "a"}, {Name: "b"}},
+			})
+			if gotErr := err != nil; gotErr != tc.wantErr {
+				t.Errorf("instantiate() with Vars %q and VarDeps %q returned error %v; want error %v", tc.vars, tc.varDeps, err, tc.wantErr)
+			}
+		})
+	}
+}
+
 func TestInstantiateNegativeTimeout(t *gotesting.T) {
 	if _, err := instantiate(&Test{
 		Func:    TESTINSTANCETEST,
@@ -1468,6 +1494,33 @@ func TestValidateSearchFlags_Error(t *gotesting.T) {
 	} {
 		if err := validateSearchFlags(searchFlags); err == nil {
 			t.Errorf("validateSearchFlags(%v) = nil; want error", searchFlags)
+		}
+	}
+}
+
+// BenchmarkInstantiate measures instantiating a parameterized test, which
+// bundles do for thousands of tests at startup.
+func BenchmarkInstantiate(b *gotesting.B) {
+	test := &Test{
+		Func:         TESTINSTANCETEST,
+		Desc:         "Benchmark test",
+		Contacts:     []string{"tast-owners@google.com"},
+		Attr:         []string{"group:mainline", "informational"},
+		Data:         []string{"foo.txt", "bar/baz.txt"},
+		Vars:         []string{"servo", "testing.TESTINSTANCETEST.user"},
+		SoftwareDeps: []string{"chrome"},
+		Params: []Param{
+			{Name: "a", Val: 1},
+			{Name: "b", Val: 2},
+			{Name: "c", Val: 3},
+			{Name: "d", Val: 4},
+		},
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if _, err := instantiate(test); err != nil {
+			b.Fatalf("instantiate() failed: %v", err)
 		}
 	}
 }

@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -106,6 +106,22 @@ func instantiate(t *Test) ([]*TestInstance, error) {
 		return nil, err
 	}
 
+	// Resolve Func and validate fields that do not depend on Param once per
+	// Test, as bundles register thousands of test instances at startup.
+	info, err := getTestFuncInfo(t.Func)
+	if err != nil {
+		return nil, err
+	}
+	if err := validateFileName(info.name, filepath.Base(info.file)); err != nil {
+		return nil, err
+	}
+	if err := validateData(t.Data); err != nil {
+		return nil, err
+	}
+	if err := validateVars(info.category, info.name, append(append([]string(nil), t.Vars...), t.VarDeps...)); err != nil {
+		return nil, err
+	}
+
 	// Empty Params is equivalent to one Param with all default values.
 	ps := t.Params
 	if len(ps) == 0 {
@@ -114,7 +130,7 @@ func instantiate(t *Test) ([]*TestInstance, error) {
 
 	tis := make([]*TestInstance, 0, len(ps))
 	for _, p := range ps {
-		ti, err := newTestInstance(t, &p)
+		ti, err := newTestInstance(t, info, &p)
 		if err != nil {
 			return nil, err
 		}
@@ -124,16 +140,10 @@ func instantiate(t *Test) ([]*TestInstance, error) {
 	return tis, nil
 }
 
-func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
-	info, err := getTestFuncInfo(t.Func)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := validateFileName(info.name, filepath.Base(info.file)); err != nil {
-		return nil, err
-	}
-
+// newTestInstance creates a TestInstance from t and p. info must be the result
+// of getTestFuncInfo(t.Func), and the fields of t validated by instantiate are
+// not validated again.
+func newTestInstance(t *Test, info *testFuncInfo, p *Param) (*TestInstance, error) {
 	name := fmt.Sprintf("%s.%s", info.category, info.name)
 	if p.Name != "" {
 		name += "." + p.Name
@@ -165,13 +175,6 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}
 
 	data := append(append([]string(nil), t.Data...), p.ExtraData...)
-	if err := validateData(t.Data); err != nil {
-		return nil, err
-	}
-
-	if err := validateVars(info.category, info.name, append(append([]string(nil), t.Vars...), t.VarDeps...)); err != nil {
-		return nil, err
-	}
 
 	swDeps := make(map[string]dep.SoftwareDeps)
 	swDeps[""] = append(append([]string(nil), t.SoftwareDeps...), p.ExtraSoftwareDeps...)
@@ -450,11 +453,14 @@ func validateData(data []string) error {
 	}
 	return nil
 }
+
+// searchFlagKeyRegexp validates keys of SearchFlags.
+var searchFlagKeyRegexp = regexp.MustCompile(`^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$`)
+
 func validateSearchFlags(searchFlags []*protocol.StringPair) error {
-	validKey := regexp.MustCompile(`^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$`)
 	for _, searchFlag := range searchFlags {
-		if !validKey.MatchString(searchFlag.Key) {
-			return fmt.Errorf("the key of SearchFlag %v should match %s", searchFlag, validKey)
+		if !searchFlagKeyRegexp.MatchString(searchFlag.Key) {
+			return fmt.Errorf("the key of SearchFlag %v should match %s", searchFlag, searchFlagKeyRegexp)
 		}
 	}
 	return nil

@@ -140,6 +140,10 @@ Tast waits for the DUT to be ready only before local tests that use a
 [precondition] or are skipped, so `-waituntilready=false` does not speed up
 other tests.
 
+With `-build=true` (the default), Tast also caches local test listings from
+pushed bundles on the host under `/tmp/tast/cache/local_entities`. Deleting that
+directory is safe if you ever suspect a stale test list.
+
 Lab runs (CQ and CI) run prebuilt bundles (`-build=false`) and keep the defaults
 for the other flags above, so run your tests once without these flags before
 sending your change for review.

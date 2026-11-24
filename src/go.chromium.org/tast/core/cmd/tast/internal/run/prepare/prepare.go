@@ -387,7 +387,7 @@ func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, target
 
 	// Push executables first. New test bundle is needed later to get the list of
 	// data files to push.
-	pushedExcutables, err := pushExecutables(ctx, cfg, drv.SSHConn(), targetArch)
+	pushedExcutables, err := pushExecutables(ctx, cfg, drv, targetArch)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to push local executables: %v", err)
 	}
@@ -413,8 +413,9 @@ func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, target
 }
 
 // pushExecutables pushes the freshly built local test runner, local test bundle
-// executable to the DUT if necessary.
-func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch string) (
+// executable to the DUT if necessary, after enabling the cache of local entity
+// lists for them on drv.
+func pushExecutables(ctx context.Context, cfg *config.Config, drv *driver.Driver, targetArch string) (
 	map[string]string, error) {
 	srcDir := filepath.Join(cfg.BuildOutDir(), targetArch)
 
@@ -425,12 +426,18 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 		filepath.Join(srcDir, build.LocalBundleBuildSubdir, cfg.BuildBundle()): filepath.Join(cfg.LocalBundleDir(), cfg.BuildBundle()),
 	}
 
+	// Enable the cache before pushing, as it works only while the executables
+	// stay as they are now. Hashing them overlaps with pushing them.
+	if err := drv.EnableLocalListCache(files); err != nil {
+		logging.Infof(ctx, "Not caching local entity lists: %v", err)
+	}
+
 	ctx, st := timing.Start(ctx, "push_executables")
 	defer st.End()
 
 	logging.Info(ctx, "Pushing executables to target")
 	start := time.Now()
-	bytes, err := linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
+	bytes, err := linuxssh.PutFiles(ctx, drv.SSHConn(), files, linuxssh.DereferenceSymlinks)
 	if err != nil {
 		return nil, err
 	}

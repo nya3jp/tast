@@ -6,6 +6,8 @@ package driver_test
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -268,6 +270,113 @@ func TestDriver_ListMatchedLocalTestsReusesList(t *gotesting.T) {
 	features.CheckDeps = false
 	if diff := cmp.Diff(list(features), []string{"pkg.Test1", "pkg.Test2"}); diff != "" {
 		t.Errorf("ListMatchedLocalTests() with other features mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestDriver_EnableLocalListCache(t *gotesting.T) {
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1"})
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2"})
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
+	ctx := env.Context()
+
+	// Host copies of the executables pushed to the DUT.
+	runner := filepath.Join(env.TempDir(), "local_test_runner")
+	bundle := filepath.Join(env.TempDir(), "bundle")
+	for _, p := range []string{runner, bundle} {
+		if err := os.WriteFile(p, []byte(p), 0755); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// listInNewRun returns the names of local tests matching pattern that are
+	// listed with a new driver, as a new run does.
+	listInNewRun := func(pattern string) []string {
+		t.Helper()
+		cfg := env.Config(func(cfg *config.MutableConfig) {
+			cfg.Build = true
+			cfg.BuildBundle = "bundle"
+			cfg.Patterns = []string{pattern}
+		})
+		drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+		if err != nil {
+			t.Fatal("driver.New failed: ", err)
+		}
+		defer drv.Close(ctx)
+		pushed := map[string]string{runner: cfg.LocalRunner(), bundle: cfg.LocalBundleGlob()}
+		if err := drv.EnableLocalListCache(pushed); err != nil {
+			t.Fatal("EnableLocalListCache failed: ", err)
+		}
+		tests, err := drv.ListMatchedLocalTests(ctx, &protocol.Features{})
+		if err != nil {
+			t.Fatal("ListMatchedLocalTests failed: ", err)
+		}
+		var names []string
+		for _, e := range tests {
+			names = append(names, e.Resolved.GetEntity().GetName())
+		}
+		return names
+	}
+
+	if diff := cmp.Diff(listInNewRun("pkg.Test1"), []string{"pkg.Test1"}); diff != "" {
+		t.Errorf("ListMatchedLocalTests() mismatch (-got +want):\n%s", diff)
+	}
+	// A run with the same executables matches the cached list with its own
+	// pattern and does not ask the DUT, so a test added to the fake bundle
+	// there is not found.
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test3"})
+	if diff := cmp.Diff(listInNewRun("pkg.*"), []string{"pkg.Test1", "pkg.Test2"}); diff != "" {
+		t.Errorf("ListMatchedLocalTests() with the same executables mismatch (-got +want):\n%s", diff)
+	}
+	// A run with another bundle or test runner executable asks the DUT.
+	if err := os.WriteFile(bundle, []byte("new bundle"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(listInNewRun("pkg.*"), []string{"pkg.Test1", "pkg.Test2", "pkg.Test3"}); diff != "" {
+		t.Errorf("ListMatchedLocalTests() with another bundle mismatch (-got +want):\n%s", diff)
+	}
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test4"})
+	if err := os.WriteFile(runner, []byte("new runner"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(listInNewRun("pkg.*"), []string{"pkg.Test1", "pkg.Test2", "pkg.Test3", "pkg.Test4"}); diff != "" {
+		t.Errorf("ListMatchedLocalTests() with another test runner mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestDriver_EnableLocalListCacheFails(t *gotesting.T) {
+	env := runtest.SetUp(t)
+	ctx := env.Context()
+
+	for _, tc := range []struct {
+		name   string
+		build  bool
+		pushed func(cfg *config.Config) map[string]string
+	}{
+		{"runner_not_pushed", true, func(cfg *config.Config) map[string]string {
+			return map[string]string{"bundle": cfg.LocalBundleGlob()}
+		}},
+		{"bundle_not_pushed", true, func(cfg *config.Config) map[string]string {
+			return map[string]string{"runner": cfg.LocalRunner()}
+		}},
+		{"bundle_glob_with_wildcard", false, func(cfg *config.Config) map[string]string {
+			return map[string]string{"runner": cfg.LocalRunner(), "bundle": cfg.LocalBundleGlob()}
+		}},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			cfg := env.Config(func(cfg *config.MutableConfig) {
+				cfg.Build = tc.build
+				cfg.BuildBundle = "bundle"
+			})
+			drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+			if err != nil {
+				t.Fatal("driver.New failed: ", err)
+			}
+			defer drv.Close(ctx)
+			if err := drv.EnableLocalListCache(tc.pushed(cfg)); err == nil {
+				t.Error("EnableLocalListCache succeeded unexpectedly")
+			}
+		})
 	}
 }
 

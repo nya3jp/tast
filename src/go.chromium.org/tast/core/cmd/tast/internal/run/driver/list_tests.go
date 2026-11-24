@@ -6,10 +6,13 @@ package driver
 
 import (
 	"context"
+	"path/filepath"
 	"slices"
+	"strings"
 
 	"google.golang.org/protobuf/proto"
 
+	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/listcache"
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -48,7 +51,7 @@ func (d *Driver) ListMatchedLocalTestsAndFixtures(ctx context.Context, features 
 	if l := d.localEntities; l != nil && proto.Equal(l.features, features) {
 		return slices.Clone(l.tests), slices.Clone(l.fixtures), nil
 	}
-	tests, fixtures, err = d.localRunnerClient().ListTestsAndFixtures(ctx, d.cfg.Patterns(), features)
+	tests, fixtures, err = d.localRunnerClient().ListTestsAndFixtures(ctx, d.cfg.Patterns(), features, d.localListCache)
 	if err != nil {
 		if !d.healthy(ctx) {
 			logging.Infof(ctx, "The connection to DUT %s is not healthy", d.rawTarget)
@@ -70,6 +73,31 @@ func (d *Driver) ListMatchedLocalTestsAndFixtures(ctx context.Context, features 
 type localEntityList struct {
 	features        *protocol.Features
 	tests, fixtures []*BundleEntity
+}
+
+// EnableLocalListCache makes d store lists of local entities under the Tast
+// directory on the host and reuse them in later runs. It must be called right
+// before pushing executables to the DUT, with files mapping their host paths
+// to their DUT paths. It fails unless the local test runner and all bundles it
+// lists are pushed, since their contents and a request determine the list.
+func (d *Driver) EnableLocalListCache(files map[string]string) error {
+	srcs := make(map[string]string)
+	for src, dst := range files {
+		srcs[dst] = src
+	}
+	runner, ok := srcs[d.cfg.LocalRunner()]
+	if !ok {
+		return errors.Errorf("local test runner %s is not pushed", d.cfg.LocalRunner())
+	}
+	// The runner lists all bundles matching the glob, which can be the pushed
+	// bundle only if the glob is its path without wildcards.
+	glob := d.cfg.LocalBundleGlob()
+	bundle, ok := srcs[glob]
+	if !ok || strings.ContainsAny(glob, `*?[\`) {
+		return errors.Errorf("bundle glob %s may match bundles that are not pushed", glob)
+	}
+	d.localListCache = listcache.New(filepath.Join(d.cfg.TastDir(), "cache", "local_entities"), runner, bundle)
+	return nil
 }
 
 func (d *Driver) healthy(ctx context.Context) bool {

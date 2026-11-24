@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/drivercore"
+	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/listcache"
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -173,13 +174,14 @@ func (c *Client) DownloadPrivateBundles(ctx context.Context, req *protocol.Downl
 
 // ListTests enumerates tests matching patterns.
 func (c *Client) ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*drivercore.BundleEntity, error) {
-	tests, _, err := c.ListTestsAndFixtures(ctx, patterns, features)
+	tests, _, err := c.ListTestsAndFixtures(ctx, patterns, features, nil)
 	return tests, err
 }
 
 // ListTestsAndFixtures enumerates tests matching patterns and all fixtures
-// with a single ListEntities request.
-func (c *Client) ListTestsAndFixtures(ctx context.Context, patterns []string, features *protocol.Features) (tests, fixtures []*drivercore.BundleEntity, retErr error) {
+// with a single ListEntities request. If cache is non-nil, the response is
+// loaded from it if possible, and stored there otherwise.
+func (c *Client) ListTestsAndFixtures(ctx context.Context, patterns []string, features *protocol.Features, cache *listcache.Cache) (tests, fixtures []*drivercore.BundleEntity, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "listing tests")
@@ -191,36 +193,17 @@ func (c *Client) ListTestsAndFixtures(ctx context.Context, patterns []string, fe
 		return nil, nil, err
 	}
 
-	logging.Infof(ctx, "Sending ListEntities Request to test runner (hops=%v)", c.hops)
-	listEntities := func(timeout time.Duration) (*protocol.ListEntitiesResponse, error) {
-		conn, err := c.dial(ctx, &protocol.HandshakeRequest{RunnerInitParams: c.params})
-		if err != nil {
-			return nil, err
-		}
-		defer conn.Close(ctx)
-		req := &protocol.ListEntitiesRequest{
-			Features: features,
-		}
-		// It should be less than a minute to list entities.
-		cl := protocol.NewTestServiceClient(conn.Conn())
-		ctxForListEntities, cancel := context.WithTimeout(ctx, timeout)
-		defer cancel()
-		return cl.ListEntities(ctxForListEntities, req)
+	req := &protocol.ListEntitiesRequest{
+		Features: features,
 	}
-
-	var res *protocol.ListEntitiesResponse
-	listEntitiesTimeout := time.Minute
-	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-		res, err = listEntities(listEntitiesTimeout)
+	res := cache.Load(ctx, c.params, req)
+	if res == nil {
+		res, err = c.listEntitiesWithRetry(ctx, req)
 		if err != nil {
-			listEntitiesTimeout += time.Minute
-			return err
+			return nil, nil, err
 		}
-		return nil
-	}, &testingutil.PollOptions{Timeout: 7 * time.Minute, Interval: 5 * time.Second}); err != nil {
-		return nil, nil, errors.Wrap(err, "failed to send ListEntities request after multiple retries")
+		cache.Store(ctx, c.params, req, res)
 	}
-	logging.Info(ctx, "Got ListEntities Response from local test runner")
 
 	for _, e := range res.GetEntities() {
 		switch e.GetEntity().GetType() {
@@ -243,6 +226,39 @@ func (c *Client) ListTestsAndFixtures(ctx context.Context, patterns []string, fe
 	}
 	sortFixtures(fixtures)
 	return tests, fixtures, nil
+}
+
+// listEntitiesWithRetry sends req to the test runner, retrying on errors.
+func (c *Client) listEntitiesWithRetry(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
+	logging.Infof(ctx, "Sending ListEntities Request to test runner (hops=%v)", c.hops)
+	listEntities := func(timeout time.Duration) (*protocol.ListEntitiesResponse, error) {
+		conn, err := c.dial(ctx, &protocol.HandshakeRequest{RunnerInitParams: c.params})
+		if err != nil {
+			return nil, err
+		}
+		defer conn.Close(ctx)
+		// It should be less than a minute to list entities.
+		cl := protocol.NewTestServiceClient(conn.Conn())
+		ctxForListEntities, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+		return cl.ListEntities(ctxForListEntities, req)
+	}
+
+	var res *protocol.ListEntitiesResponse
+	listEntitiesTimeout := time.Minute
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+		var err error
+		res, err = listEntities(listEntitiesTimeout)
+		if err != nil {
+			listEntitiesTimeout += time.Minute
+			return err
+		}
+		return nil
+	}, &testingutil.PollOptions{Timeout: 7 * time.Minute, Interval: 5 * time.Second}); err != nil {
+		return nil, errors.Wrap(err, "failed to send ListEntities request after multiple retries")
+	}
+	logging.Info(ctx, "Got ListEntities Response from local test runner")
+	return res, nil
 }
 
 // GlobalRuntimeVars client implementation

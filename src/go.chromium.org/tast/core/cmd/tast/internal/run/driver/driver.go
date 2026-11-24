@@ -15,6 +15,7 @@ import (
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/drivercore"
+	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/listcache"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/runnerclient"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/sshconfig"
 	"go.chromium.org/tast/core/errors"
@@ -56,6 +57,7 @@ type Driver struct {
 	servoHostInfo    *servo.HostInfo
 	remoteDevservers []string
 	localEntities    *localEntityList
+	localListCache   *listcache.Cache
 }
 
 // New establishes a new connection to the target device and returns a Driver.

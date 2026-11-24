@@ -73,6 +73,9 @@ func (d *Driver) DownloadPrivateLocalBundles(ctx context.Context, dutInfo *proto
 
 // DownloadPrivateRemoteBundles downloads and installs the remote private test bundle archive
 // for the specified target version, if it hasn't been previously installed.
+// It must not use the connection to the DUT (d.cc), which is not
+// goroutine-safe: prepare.SetUpRemotePrivateBundle runs it concurrently with
+// DownloadPrivateLocalBundles, which uses the connection.
 func (d *Driver) DownloadPrivateRemoteBundles(ctx context.Context, dutInfo *protocol.DUTInfo) error {
 
 	client := d.remoteRunnerClient()

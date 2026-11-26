@@ -420,6 +420,20 @@ func (c *RealClient) openStaged(ctx context.Context, staticURL *url.URL) (io.Rea
 		switch res.StatusCode {
 		case http.StatusOK, http.StatusPartialContent:
 			return res.Body, nil
+		case http.StatusBadRequest:
+			defer res.Body.Close()
+			out, _ := io.ReadAll(io.LimitReader(res.Body, 4096))
+			s := strings.TrimSpace(string(out))
+			// CFT's cache-server answers /is_staged with "True" and fetches
+			// from GCS on /static/, responding with 400 when the object is
+			// missing (e.g. private bundles on public amd64-generic builds).
+			if strings.Contains(s, "storage: object doesn't exist") {
+				return nil, fmt.Errorf("got status %d: %s: %w", res.StatusCode, s, os.ErrNotExist)
+			}
+			if s != "" {
+				return nil, fmt.Errorf("got status %d: %s", res.StatusCode, s)
+			}
+			return nil, fmt.Errorf("got status %d", res.StatusCode)
 		case http.StatusInternalServerError:
 			defer res.Body.Close()
 			out, _ := io.ReadAll(res.Body)

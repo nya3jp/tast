@@ -13,6 +13,7 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -158,6 +159,59 @@ func TestRealClientNotFoundStage404(t *testing.T) {
 	}
 	if n := atomic.LoadInt32(&stageCalls); n != 1 {
 		t.Errorf("Got %d stage requests; want 1", n)
+	}
+}
+
+// TestRealClientStatic400 tests that an HTTP 400 from /static/ (as CFT's
+// cache-server returns after answering /is_staged with "True") maps to
+// os.ErrNotExist only when the response body reports a missing GCS object.
+func TestRealClientStatic400(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		body         string
+		wantNotExist bool
+		wantSubstr   string
+	}{
+		{
+			name:         "missing_object",
+			body:         `Unable to get artifact bucket/path/to/not_found, could not get a reader for GCS object "path/to/not_found" in bucket "bucket", storage: object doesn't exist`,
+			wantNotExist: true,
+		},
+		{
+			name:       "other_bad_request",
+			body:       "Unable to get artifact bucket/path/to/not_found, googleapi: Error 403: Forbidden",
+			wantSubstr: "Forbidden",
+		},
+		{
+			name:       "empty_body",
+			wantSubstr: "got status 400",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/check_health", func(w http.ResponseWriter, r *http.Request) {})
+			mux.HandleFunc("/is_staged", func(w http.ResponseWriter, r *http.Request) {
+				io.WriteString(w, "True")
+			})
+			mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, tc.body, http.StatusBadRequest)
+			})
+			s := httptest.NewServer(mux)
+			defer s.Close()
+
+			cl := devserver.NewRealClient(t.Context(), []string{s.URL}, nil)
+			r, err := cl.Open(t.Context(), notFoundURL)
+			if err == nil {
+				r.Close()
+				t.Fatal("Open unexpectedly succeeded")
+			}
+			if got := errors.Is(err, os.ErrNotExist); got != tc.wantNotExist {
+				t.Errorf("errors.Is(%q, os.ErrNotExist) = %v; want %v", err, got, tc.wantNotExist)
+			}
+			if tc.wantSubstr != "" && !strings.Contains(err.Error(), tc.wantSubstr) {
+				t.Errorf("Open error = %q; want substring %q", err, tc.wantSubstr)
+			}
+		})
 	}
 }
 
